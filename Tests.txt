@@ -1,0 +1,23 @@
+Tests to run
+
+Enter invalid numbers in minutes field
+Countdown from 1 works (with alert)
+All fields in .ini are read and written
+All options in settings dialog work
+All options in settings dialog take effect even when timer is running
+Escape closes window
+Minutes at 0 convert it into a stopwatch
+Start button starts and stops timer
+Reset button works
+Hitting enter in minutes field toggles timer
+Check all menu items
+Test all menu items from tray icon
+Tab cycles through fields correctly
+Start time, let it go to 0, then hit start again
+Start with no .ini file (check all defaults)
+Change settings while timer is running
+Start timer, pause it at 1 second, then resume - make sure it behaves correctly
+Command line parameter
+Test memory usage for leaks (especially after opening browse or font dialog)
+Change settings (like alarms) when alarm is going off
+When loop audio is on with message alarm, make sure hitting ok stops the alarm.

@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <Title Value="SnapTimer"/>
+      <Icon Value="0"/>
+      <UseXPManifest Value="True"/>
+      <ActiveEditorIndexAtStart Value="0"/>
+    </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <CurrentMinorRevNr Value="2"/>
+      <ProjectVersion Value="0.0.1.0"/>
+      <CompanyName Value="Snapmagic Software"/>
+      <FileDescription Value="Simple countdown timer"/>
+      <LegalCopyright Value="Snapmagic Software"/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="TurboPowerIPro"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="snaptimer.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="snaptimer"/>
+        <CursorPos X="30" Y="21"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainform1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MainForm1"/>
+        <CursorPos X="42" Y="589"/>
+        <TopLine Value="567"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="About"/>
+        <CursorPos X="25" Y="27"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="198"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="settings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="settings"/>
+        <CursorPos X="37" Y="182"/>
+        <TopLine Value="157"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="152"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\..\..\..\lazarus\lcl\include\wincontrol.inc"/>
+        <CursorPos X="25" Y="6651"/>
+        <TopLine Value="6618"/>
+        <UsageCount Value="7"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\..\..\..\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <CursorPos X="15" Y="1775"/>
+        <TopLine Value="1755"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\..\..\..\..\lazarus\fpc\2.4.0\source\rtl\objpas\typinfo.pp"/>
+        <UnitName Value="typinfo"/>
+        <CursorPos X="10" Y="315"/>
+        <TopLine Value="292"/>
+        <UsageCount Value="4"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\..\..\..\..\lazarus\lcl\lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <CursorPos X="43" Y="1506"/>
+        <TopLine Value="1480"/>
+        <UsageCount Value="4"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="floating.pas"/>
+        <ComponentName Value="FloatingForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Floating"/>
+        <CursorPos X="30" Y="14"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="73"/>
+      </Unit8>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="461" Column="46" TopLine="441"/>
+      </Position1>
+      <Position2>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="456" Column="47" TopLine="426"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="117" Column="13" TopLine="97"/>
+      </Position4>
+      <Position5>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="569" Column="14" TopLine="546"/>
+      </Position5>
+      <Position6>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="578" Column="1" TopLine="543"/>
+      </Position6>
+      <Position7>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="57" Column="25" TopLine="37"/>
+      </Position8>
+      <Position9>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="459" Column="41" TopLine="439"/>
+      </Position9>
+      <Position10>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="568" Column="33" TopLine="552"/>
+      </Position10>
+      <Position11>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="117" Column="20" TopLine="106"/>
+      </Position11>
+      <Position12>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="287" Column="18" TopLine="267"/>
+      </Position12>
+      <Position13>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="458" Column="23" TopLine="436"/>
+      </Position13>
+      <Position14>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="465" Column="25" TopLine="436"/>
+      </Position14>
+      <Position15>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="574" Column="1" TopLine="552"/>
+      </Position15>
+      <Position16>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="435" Column="30" TopLine="422"/>
+      </Position16>
+      <Position17>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="117" Column="20" TopLine="97"/>
+      </Position18>
+      <Position19>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="286" Column="31" TopLine="267"/>
+      </Position19>
+      <Position20>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="434" Column="20" TopLine="414"/>
+      </Position20>
+      <Position21>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="458" Column="23" TopLine="438"/>
+      </Position21>
+      <Position22>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="465" Column="25" TopLine="438"/>
+      </Position22>
+      <Position23>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="575" Column="53" TopLine="552"/>
+      </Position23>
+      <Position24>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="460" Column="1" TopLine="449"/>
+      </Position24>
+      <Position25>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="569" Column="11" TopLine="559"/>
+      </Position25>
+      <Position26>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="579" Column="22" TopLine="559"/>
+      </Position26>
+      <Position27>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="584" Column="27" TopLine="559"/>
+      </Position27>
+      <Position28>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="747" Column="56" TopLine="726"/>
+      </Position28>
+      <Position29>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="744" Column="31" TopLine="103"/>
+      </Position29>
+      <Position30>
+        <Filename Value="mainform1.pas"/>
+        <Caret Line="587" Column="21" TopLine="561"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="SnapTimer.exe"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)\"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <IgnoredMessages idx5057="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Watches Count="2">
+      <Item1>
+        <Expression Value="this"/>
+        <Enabled Value="False"/>
+      </Item1>
+      <Item2>
+        <Expression Value="if"/>
+        <Enabled Value="False"/>
+      </Item2>
+    </Watches>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

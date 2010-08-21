@@ -1,0 +1,9 @@
+Steps to release a new version
+
+* Run all tests in texts.txt (write unit tests?)
+* Update Readme.txt with new version and new features
+* Update version.inc
+* Update EXE version in project
+* Run deploy.bat to copy all the files into the released location
+* Archive previous version's zip file
+* Put new zip file up on web server, update HTML page with version info, date and MD5 sum

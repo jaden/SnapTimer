@@ -1,0 +1,93 @@
+Transparency (code from Peazip) http://www.lazarus.freepascal.org/index.php/topic,8488.0.html
+    http://delphi.about.com/od/graphics/l/aa022202a.htm
+    {$IFDEF MSWINDOWS}
+        type //used for transparency
+        TSetLayeredWindowAttributes = function(hwnd: HWND; crKey: COLORREF; bAlpha: Byte; dwFlags: Longint): Longint;
+        stdcall;
+
+What to do when time is up        
+    Blink the time
+    Shake the window http://delphi.about.com/od/adptips2005/qt/windowshake.htm (set how many seconds)
+    Bring app to front
+    Play system beep (MessageBeep(-1); in MMSystem, http://sheepdogguides.com/dt2g.htm
+    Restart or shutdown windows (can they already do this by running a command?)
+
+Option to restore defaults (equivalent of deleting the .ini file)                
+
+Implement compact mode - show just the time without buttons or menus
+    Have setting so it opens in that mode.
+
+Keyboard shortcuts
+    Global shortcut to show window (configurable)
+
+Allow setting of hours or seconds as an option?
+
+Change the text to look like a digital clock instead of plain text
+    Use images for the numbers? 
+    Draw the numbers on a canvas
+    It would keep text from shifting slightly when a 1 goes in the minutes' tens place.  If that bothers you, use a monospace font
+
+Add an analog mode that shows a clock face and draw the hands going around
+
+Test with different font sizes (huge fonts, small fonts)
+    
+Add progress bar that counts up until it's done
+
+Update this post: http://dan.hersam.com/2008/11/14/windows-countdown-timer-showdown/
+
+In blog entry about the timer, write about productivity methods
+http://productivegeek.com/articles/increase-your-efficiency-by-timing-your-tasks/
+http://www.pomodorotechnique.com/
+http://lifehacker.com/178048/download-of-the-day-the-two-minute-timer
+http://hwebbjr.typepad.com/openloops/2006/04/boosting_produc.html
+http://www.43folders.com/2005/10/11/procrastination-hack-1025
+http://download.cnet.com/windows/alarms-and-clock-software/
+Steve Pavlina's newsletter to do 15 minute chunks
+30 minutes of uninterrupted work for the Now Habit
+2 minutes of relaxing to get ready for a task
+
+Make stopwatch mode show tenths of seconds instead of just seconds?
+Have option to show tenths of seconds for timer mode too
+
+Look at http://gtd-timer.com/moreinfo.htm for settings and ideas
+
+Big screen view: http://www.portablefreeware.com/?id=1920&ts=1280016601
+
+Make it an option to hide the menu bar
+
+Fix settings dialog to look okay with large text (best practice for that sort of thing?)
+
+Play other audio files in addition to wavs
+    http://www.un4seen.com/
+    http://symmetrica.net/newac/
+    http://wiki.lazarus.freepascal.org/ACS
+    
+Create themes to choose from (color combinations that look good)
+
+Allow creation of saved settings for timers - alarm method and countdown time
+Different .ini file for each setting, load the ini file from command line?    
+
+Run notifications at a certain clock time instead of when the timer reaches 0
+
+Make dialogs not show up in taskbar (so nothing appears if the main form is minimized to tray and you open about page or options) I set ShowInTaskBar to stNever, but it still shows up.
+
+When font size changes, I should be able to automatically resize the window using the viewable rectangle to show all the text.  If I set the form's AutoSize to true, it works on startup (but could use some tweaks), but I can't seem to get it to work after the options dialog is displayed.  What about creating a simple example to see if I can get it to resize the form?  What about using vector graphics?
+What about drawing with the font?
+
+Change start/pause images into an image list TImageList - resizing seems to be messing this up a bit, so it would be good to do
+
+Maximize window and display about or options dialogs, window should remain maximized after dialog is closed.
+
+If two windows are open and always on top mode is set, they get into a fight - stop it somehow?
+
+Start using version control of some sort
+
+Write unit tests
+
+Goals for next release
+* Automatic resize with font change - if it proves too challenging, what about drawing the fonts on a canvas? (post on lazarus forum for help, resize works on startup, how can I get it to work after font size change?)
+* Get rid of flickering with large fonts (post on lazarus forum for help)
+* start/pause one image (Timagelist)
+
+Answer from forum: http://wiki.lazarus.freepascal.org/Developing_with_Graphics#Create_a_custom_control_which_draws_itself
+You can draw your clock-style digits with narrow hexagons (TCanvas.Polygon)

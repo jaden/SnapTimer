@@ -1,0 +1,11 @@
+backup
+Deploy
+*.o
+*.or
+*.ppu
+*.compiled
+*.lrs
+*.rc
+*.res
+*.exe
+*.swp

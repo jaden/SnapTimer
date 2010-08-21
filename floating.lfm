@@ -1,0 +1,11 @@
+object FloatingForm: TFloatingForm
+  Left = 262
+  Height = 80
+  Top = 223
+  Width = 317
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'Floating'
+  ShowInTaskBar = stNever
+  LCLVersion = '0.9.28.2'
+end
