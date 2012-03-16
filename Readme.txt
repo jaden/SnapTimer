@@ -35,7 +35,6 @@ A popular productivity strategy is to use a timer to do mini-sprints of work.  U
 * No ads, spyware or malware
 * 100% free
 
-
 Download / Install
 Download from here: http://dan.hersam.com/software/snaptimer/
 Unzip SnapTimer.zip and run SnapTimer.exe
@@ -57,6 +56,7 @@ Known issues
 * On Windows XP the font color in the font chooser is set to black if the font is using a custom color.
 * Always on top mode isn't entirely foolproof, sometimes windows can get above SnapTimer.
 * When automatically restart timer and the display message alarm settings are both enabled, the timer is restarted only after the message dialog is dismissed.
+* On Windows 7 or Vista, if you get the error, "An error occurred trying to write to the .ini file" run SnapTimer in Administrator mode (right click and select "Run as administrator")
 
 Contact
 dan@hersam.com
@@ -70,6 +70,8 @@ Icons from http://www.fatcow.com/free-icons/
 
 Release history
 0.2 - 
+Fixed relative paths when started from another directory
+Startup position dropdown is now read only
 Looping audio is stopped when the message dialog is closed.
 Set default tray popup menu to start/stop
 

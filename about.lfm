@@ -1,7 +1,7 @@
 object AboutForm: TAboutForm
-  Left = 241
+  Left = 1363
   Height = 123
-  Top = 545
+  Top = 409
   Width = 328
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
@@ -13,7 +13,7 @@ object AboutForm: TAboutForm
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.30'
   object Image1: TImage
     Left = 8
     Height = 32

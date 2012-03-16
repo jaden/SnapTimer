@@ -17,6 +17,7 @@ type
     BtnCancel: TButton;
     BtnDefaults: TButton;
     CheckAutoRestart: TCheckBox;
+    CheckSecondsMode: TCheckBox;
     CheckAutoSave: TCheckBox;
     CheckAlwaysOnTop: TCheckBox;
     CheckTicking: TCheckBox;

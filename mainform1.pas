@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
   Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Settings, MMSystem,
-  Windows, StrUtils, typinfo;
+  Windows, StrUtils, typinfo, DateUtils;
 
 type
 
@@ -29,7 +29,6 @@ type
     MenuSave: TMenuItem;
     PopupMenuCompact: TPopupMenu;
     ImgReset: TImage;
-    TopTimer: TTimer;
     TrayMenuOptions: TMenuItem;
     TrayMenuShow: TMenuItem;
     TrayMenuToggle: TMenuItem;
@@ -44,13 +43,12 @@ type
     MenuExit: TMenuItem;
     MenuEdit: TMenuItem;
     TrayMenu: TPopupMenu;
-    MinutesLabel: TLabel;
+    TimeLabel: TLabel;
     Minutes: TSpinEdit;
     Count:   TStaticText;
     Timer1:  TTimer;
     TrayIconMain: TTrayIcon;
     procedure FormActivate(Sender: TObject);
-    procedure StayOnTop(Sender: TObject);
     procedure ToggleCompact(Sender: TObject);
     procedure MinutesChanged(Sender: TObject);
     procedure OnDestroyForm(Sender: TObject);
@@ -83,6 +81,8 @@ type
     procedure SetFieldsVisible(showFields: boolean);
     procedure UpdateAlwaysOnTop(onTop: boolean);
     procedure PlayTicking();
+    function IsInteger(S: String): boolean;
+    procedure UpdateTimeCaption(newSecondsMode: boolean);
   private
     { private declarations }
     IniFile: TIniFile;
@@ -117,7 +117,8 @@ type
     FontSizeChanged : boolean;
     FormerWidth : integer;
     FormerHeight : integer;
-
+    EndTime: TDateTime;
+    StartTime: TDateTime;
   public
     { public declarations }
   end;
@@ -140,7 +141,6 @@ const
   INI_SEC_ALARMS = 'Alarms';
   INI_SEC_PLACEMENT = 'Placement';
   INI_SEC_FONTS = 'Fonts';
-
   INI_MINUTES  = 'Minutes';
   INI_ALWAYS_ON_TOP = 'AlwaysOnTop';
   INI_MIN_TO_TRAY = 'MinToTray';
@@ -187,7 +187,8 @@ const
   BTN_RESET = '&Reset';
 
   // Labels
-  LBL_MINUTES = '&Minutes';
+  LBL_MINUTES = '&Minutes:';
+  LBL_SECONDS = '&Seconds:';
 
   POS_CENTER    = 0;
   POS_REMEMBER  = 1;
@@ -216,6 +217,7 @@ const
   DEF_TICKING_ON = False;
   DEF_TICKING_PATH = '.\sounds\ticking\ticking.wav';
   DEF_AUTOSAVE  = True;
+  DEF_SECONDS_MODE = False;
   DEF_POSITION  = POS_CENTER;
   DEF_HEIGHT    = 149;
   DEF_WIDTH     = 236;
@@ -233,8 +235,6 @@ const
 
 procedure TMainForm.OnCreateForm(Sender: TObject);
 begin
-  Minutes.Caption := LBL_MINUTES;
-
   MenuFile.Caption    := MENU_FILE;
   MenuToggle.Caption  := BTN_START;
   MenuReset.Caption   := BTN_RESET;
@@ -269,7 +269,7 @@ begin
   DoneAudioEnabled := DEF_DONE_AUDIO_ON;
   DoneApp     := DEF_DONE_APP;
   DoneAppEnabled := DEF_DONE_APP_ON;
-  SecondsMode := False;
+  SecondsMode := DEF_SECONDS_MODE;
   WndPosition := DEF_POSITION;
 
   WndPositions := TStringList.Create;
@@ -284,14 +284,26 @@ begin
   CompactMode := False;
   AudioPlaying := False;
   Self.DoubleBuffered := True;
-
-  // TODO This should work, but will be in Lazarus 0.9.30.0 (not released yet)
-  // Using timer to hack it for now.
-  //FormStyle:= fsSystemStayOnTop;
+  Timer1.Interval := 150;
 
   AppName := ExtractFileName(Application.ExeName);
+  IniFilename := ExtractFilePath(Application.ExeName) + ChangeFileExt(AppName, '.ini');
+
+  // TODO For some reason this isn't working at all
+  //WriteLn('checking for options: ' + IntToStr(ParamCount));
+  //If ParamCount > 1 then begin
+  //	WriteLn('has options');
+  //if Application.HasOption('h', 'help') then begin
+  //  WriteLn('SnapTimer usage');
+  //  WriteLn('[number of minutes] (must be the only parameter)');
+  //  WriteLn('-h|--help\tShow this usage');
+  //  WriteLn('-i|--ini=<filename.ini>\tPath to .ini file to use');
+  //end else if Application.HasOption('i', 'ini') then begin
+  //  //IniFilename := Application.GetOptionValue('i', 'ini');
+  //  WriteLn('ini option found');
+  //end;
+  //end;
   try
-    IniFilename := ExtractFilePath(Application.ExeName) + ChangeFileExt(AppName, '.ini');
     IniFile := TIniFile.Create(IniFilename);
     Minutes.Value := IniFile.ReadInteger(INI_SEC_MAIN, INI_MINUTES, DEF_TIME);
     AlwaysOnTop := IniFile.ReadBool(INI_SEC_MAIN, INI_ALWAYS_ON_TOP, DEF_ALWAYS_ON_TOP);
@@ -303,6 +315,7 @@ begin
     LoopAudio := IniFile.ReadBool(INI_SEC_MAIN, INI_LOOP_AUDIO, DEF_LOOP_AUDIO);
     TickingOn := IniFile.ReadBool(INI_SEC_MAIN, INI_TICKING_ON, DEF_TICKING_ON);
     AutoSave := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSAVE, DEF_AUTOSAVE);
+    SecondsMode := IniFile.ReadBool(INI_SEC_MAIN, INI_SECONDS_MODE, DEF_SECONDS_MODE);
     DoneMessage := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_MESSAGE, DEF_DONE_MSG);
     DoneMessageEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_MESSAGE_ON,
       DEF_DONE_MSG_ON);
@@ -315,7 +328,6 @@ begin
       DEF_DONE_AUDIO_ON);
     DoneApp := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_APP, DEF_DONE_APP);
     DoneAppEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_APP_ON, DEF_DONE_APP_ON);
-    SecondsMode := IniFile.ReadBool(INI_SEC_MAIN, INI_SECONDS_MODE, False);
     WndHeight := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_HEIGHT, DEF_HEIGHT);
     WndWidth := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_WIDTH, DEF_WIDTH);
     WndPosition := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_POSITION, DEF_POSITION);
@@ -341,10 +353,11 @@ begin
   if Assigned(IniFile) then
     IniFile.Free;
 
-  // Command line arguments override .ini file
-  if ParamCount > 0 then
+  // Use minutes argument if it's the only parameter and it's numeric
+  if (ParamCount = 1) and (IsInteger(ParamStr(1))) then
     Minutes.Value := StrToInt(ParamStr(1));
 
+  UpdateTimeCaption(SecondsMode);
   ResetCountdown(Sender);
   if AutoStart then
     ToggleCountdown(Sender);
@@ -418,6 +431,7 @@ begin
     CheckLoopAudio.Checked    := LoopAudio;
     CheckTicking.Checked      := TickingOn;
     CheckAutoSave.Checked     := AutoSave;
+    CheckSecondsMode.Checked  := SecondsMode;
 
     PositionCombo.Items     := WndPositions;
     PositionCombo.ItemIndex := WndPosition;
@@ -435,6 +449,8 @@ begin
 
     if ShowModal = mrOk then
     begin
+      UpdateTimeCaption(CheckSecondsMode.Checked);
+
       DoneMessage  := NotifyMsg.Text;
       DoneMessageEnabled := NotifyMsgOn.Checked;
       DoneTrayMsg  := NotifyTrayMsg.Text;
@@ -452,18 +468,25 @@ begin
       LoopAudio    := CheckLoopAudio.Checked;
       TickingOn    := CheckTicking.Checked;
       AutoSave     := CheckAutoSave.Checked;
+      SecondsMode  := CheckSecondsMode.Checked;
       WndPosition  := PositionCombo.ItemIndex;
-      if not (Count.Font.Size = f.Size) then
-      begin
-      	FontSizeChanged := True;
-        GetPreferredSize(FormerWidth, FormerHeight, True);
+      //if not (Count.Font.Size = f.Size) then
+      //begin
+      	//FontSizeChanged := True;
+        //GetPreferredSize(FormerWidth, FormerHeight, True);
         //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
-      end;
-      Count.Font  := f;
+      //end;
+      //Count.Font  := f;
+      // TODO Get font colors and background color to be shown - what's up?
+      Count.Font.Name := f.Name;
+      Count.Font.Size := f.Size;
+      Count.Font.CharSet := f.CharSet;
+      Count.Font.Color := f.Color;
+      Count.Font.Style := f.Style;
       Count.Font.Quality := fqAntialiased;
       Count.Color := BgColor.ButtonColor;
 
-      if FontSizeChanged then OnShowForm(Sender);
+      //if FontSizeChanged then OnShowForm(Sender);
 
       UpdateAlwaysOnTop(AlwaysOnTop);
 
@@ -491,9 +514,16 @@ begin
     Exit;
 
   if Minutes.Value = 0 then
-    Mode := MODE_STOPWATCH
+  begin
+    Mode := MODE_STOPWATCH;
+    // TODO Get this to not bounce around after pause and resume
+    StartTime := Now - (Timer1.Tag * OneSecond);
+  end
   else
+  begin
     Mode := MODE_TIMER;
+    EndTime := Now + (Timer1.Tag * OneSecond);
+  end;
 
   if Timer1.Tag < 0 then
     SetTimer();
@@ -511,14 +541,15 @@ procedure TMainForm.Countdown(Sender: TObject);
 begin
   if MODE = MODE_STOPWATCH then
   begin
-    Timer1.Tag := Timer1.Tag + 1;
+    Timer1.Tag := SecondsBetween(StartTime, Now);
     UpdateTime();
   end
   else
   begin
-    Timer1.Tag := Timer1.Tag - 1;
-    if Timer1.Tag < 0 then
+    if EndTime <= Now then
     begin
+      Timer1.Tag := 0;
+      UpdateTime();
       DisableTimer();
       Application.Title := APP_NAME;
       if DoneAudioEnabled then
@@ -537,6 +568,7 @@ begin
     end
     else
       UpdateTime();
+    Timer1.Tag := SecondsBetween(EndTime, Now);
   end;
 end;
 
@@ -567,7 +599,7 @@ begin
   WndHandle := GetHandle();
   GetWindowRect(WndHandle, wRect);
 
-	// TODO Get this working for window size (getpreferred size gets form, not window)
+  // TODO Get this working for window size (getpreferred size gets form, not window)
   // Get preferred size before font change, then after and add or subtract that delta from the
   // window size?
   // AutoSize is working on startup, just not when font size is changed.
@@ -601,43 +633,43 @@ begin
     //WndWidth:= w;
     //WndHeight:= h;
   	//ShowMessageFmt('width: %d, height: %d', [w, h]);
-    exit;
+    //exit;
   end;
 
-  //flags := SWP_SHOWWINDOW;
-  //
-  //if WndPosition = POS_REMEMBER then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, WndLeft, WndTop, WndWidth, WndHeight, flags);
-  //end
-  //else if WndPosition = POS_TOP_LEFT then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, flags);
-  //end
-  //else if WndPosition = POS_TOP_RIGHT then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
-  //    WndWidth, 0, WndWidth, WndHeight, flags);
-  //end
-  //else if WndPosition = POS_BOT_LEFT then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom -
-  //    WndHeight, WndWidth, WndHeight, flags);
-  //end
-  //else if WndPosition = POS_BOT_RIGHT then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
-  //    WndWidth, Monitor.WorkareaRect.Bottom - WndHeight, WndWidth,
-  //    WndHeight, flags);
-  //end
-  //else if WndPosition = POS_CENTER then
-  //begin
-  //  SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight,
-  //    SWP_SHOWWINDOW or SWP_NOMOVE);
-  //  Self.Position := poScreenCenter;
-  //end;
-  //
-  //UpdateAlwaysOnTop(AlwaysOnTop);
+  flags := SWP_SHOWWINDOW;
+
+  if WndPosition = POS_REMEMBER then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, WndLeft, WndTop, WndWidth, WndHeight, flags);
+  end
+  else if WndPosition = POS_TOP_LEFT then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, flags);
+  end
+  else if WndPosition = POS_TOP_RIGHT then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
+      WndWidth, 0, WndWidth, WndHeight, flags);
+  end
+  else if WndPosition = POS_BOT_LEFT then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom -
+      WndHeight, WndWidth, WndHeight, flags);
+  end
+  else if WndPosition = POS_BOT_RIGHT then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
+      WndWidth, Monitor.WorkareaRect.Bottom - WndHeight, WndWidth,
+      WndHeight, flags);
+  end
+  else if WndPosition = POS_CENTER then
+  begin
+    SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight,
+      SWP_SHOWWINDOW or SWP_NOMOVE);
+    Self.Position := poScreenCenter;
+  end;
+
+  UpdateAlwaysOnTop(AlwaysOnTop);
 end;
 
 procedure TMainForm.SaveSettings(Sender: TObject);
@@ -657,6 +689,7 @@ begin
     IniFile.WriteBool(INI_SEC_MAIN, INI_LOOP_AUDIO, LoopAudio);
     IniFile.WriteBool(INI_SEC_MAIN, INI_TICKING_ON, TickingOn);
     IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSAVE, AutoSave);
+    IniFile.WriteBool(INI_SEC_MAIN, INI_SECONDS_MODE, SecondsMode);
 
     GetWindowRect(GetHandle(), wRect);
 
@@ -701,6 +734,7 @@ end;
 
  // TODO Figure out how to remove the fields from the form so they don't
  // take up space anymore (and count can expand to top)
+ // Easier to create a new form, hide this one and show the other one
  // Set border style to none too.
 procedure TMainForm.SetFieldsVisible(showFields: boolean);
 begin
@@ -711,7 +745,7 @@ begin
   else
   begin
     MainForm.Menu    := nil;
-    MinutesLabel.Visible := showFields;
+    TimeLabel.Visible := showFields;
     Minutes.Visible  := showFields;
     ImgStart.Visible := showFields;
     ImgReset.Visible := showFields;
@@ -747,6 +781,7 @@ end;
  // TODO Animate icon between alarm icon and main so it blinks every second
  // Instead of playing icon, animate the clock hands so they go around?
  // http://delphi.about.com/od/kbwinshell/l/aa122501a.htm
+ // TODO Only update time if it's different (stop flashing?)
 procedure TMainForm.UpdateTime();
 begin
   Count.Caption     := SecondsToTime(Timer1.Tag);
@@ -779,9 +814,10 @@ end;
 // TODO Interpret env vars in the path
 class function TMainForm.GetFilePath(Path: string): string;
 begin
-  if AnsiStartsStr(Path, '.') then
-    Result := GetCurrentDir + Path
-  else
+  if AnsiStartsStr('.', Path) then
+  begin
+    Result := ExtractFilePath(Application.ExeName) + Path;
+  end else
     Result := Path;
 end;
 
@@ -876,16 +912,10 @@ end;
 
 procedure TMainForm.UpdateAlwaysOnTop(onTop: boolean);
 begin
-  TopTimer.Enabled := onTop;
-  SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE or
-    SWP_NOMOVE or SWP_NOSIZE);
-end;
-
-procedure TMainForm.StayOnTop(Sender: TObject);
-begin
-  if WindowState = wsNormal then
-    SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE or
-      SWP_NOMOVE or SWP_NOSIZE);
+  if onTop then
+     FormStyle:= fsSystemStayOnTop
+  else
+     FormStyle:= fsNormal
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -893,6 +923,32 @@ begin
   WindowState   := wsNormal;
   ShowInTaskBar := stDefault;
   Show;
+end;
+
+function TMainForm.IsInteger(S: String): boolean;
+begin
+  try
+    Result := True;
+    StrToInt(S);
+  except on E: EConvertError do
+    Result := False;
+  end;
+end;
+
+// TODO Only update the time if this value changed (otherwise it resets
+// the time every time you modify settings)
+// It's not working - test it thoroughly and fix it.
+procedure TMainForm.UpdateTimeCaption(newSecondsMode: boolean);
+begin
+  if newSecondsMode <> SecondsMode then
+  begin
+    if newSecondsMode then
+      TimeLabel.Caption := LBL_SECONDS
+    else
+      TimeLabel.Caption := LBL_MINUTES;
+    SetTimer();
+  end;
+
 end;
 
 initialization

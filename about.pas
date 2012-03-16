@@ -55,6 +55,7 @@ end;
 
 procedure TAboutForm.GotoUrl(Sender: TObject);
 begin
+  // TODO Replace this with OpenURL when I'm using Lazarus 0.9.29.0
   ShellExecute(0, 'open', PChar(TLabel(Sender).Caption), nil, nil, SW_SHOWNORMAL);
 end;
 

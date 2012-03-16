@@ -21,3 +21,4 @@ Command line parameter
 Test memory usage for leaks (especially after opening browse or font dialog)
 Change settings (like alarms) when alarm is going off
 When loop audio is on with message alarm, make sure hitting ok stops the alarm.
+Run Snaptimer from a different directory and make sure the file browser starts in Snaptimer's directory and sets the path relative to that directory
