@@ -1,0 +1,3 @@
+Developed with Lazarus and Free Pascal
+http://www.lazarus.freepascal.org/
+http://sourceforge.net/projects/lazarus/files/
