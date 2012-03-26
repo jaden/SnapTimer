@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 1413
   Height = 114
   Top = 573
-  Width = 214
+  Width = 191
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
   HorzScrollBar.Visible = False
@@ -12,7 +12,7 @@ object MainForm: TMainForm
   ActiveControl = Minutes
   Caption = 'SnapTimer'
   ClientHeight = 94
-  ClientWidth = 214
+  ClientWidth = 191
   KeyPreview = True
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -248,9 +248,9 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconRunning: TImage
-    Left = 200
+    Left = 155
     Height = 15
-    Top = 0
+    Top = 40
     Width = 10
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
@@ -294,9 +294,9 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconPaused: TImage
-    Left = 203
+    Left = 160
     Height = 15
-    Top = 0
+    Top = 40
     Width = 10
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
@@ -340,9 +340,9 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconDone: TImage
-    Left = 203
+    Left = 160
     Height = 15
-    Top = 0
+    Top = 40
     Width = 10
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
@@ -386,9 +386,9 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconMain: TImage
-    Left = 192
+    Left = 160
     Height = 15
-    Top = 2
+    Top = 40
     Width = 10
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
@@ -446,9 +446,9 @@ object MainForm: TMainForm
   object Count: TStaticText
     Cursor = crHandPoint
     Left = 0
-    Height = 62
-    Top = 32
-    Width = 214
+    Height = 64
+    Top = 30
+    Width = 239
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
@@ -563,7 +563,7 @@ object MainForm: TMainForm
     end
   end
   object TrayMenu: TPopupMenu
-    left = 184
+    left = 160
     top = 72
     object MenuCount: TMenuItem
       Caption = 'Countdown'

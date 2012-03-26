@@ -220,7 +220,7 @@ const
   DEF_SECONDS_MODE = False;
   DEF_POSITION  = POS_CENTER;
   DEF_HEIGHT    = 149;
-  DEF_WIDTH     = 236;
+  DEF_WIDTH     = 214;
   DEF_FONT_NAME = 'Arial';
   DEF_FONT_CHARSET = 0;
   DEF_FONT_COLOR = clNavy;
@@ -284,6 +284,7 @@ begin
   CompactMode := False;
   AudioPlaying := False;
   Self.DoubleBuffered := True;
+  Count.DoubleBuffered := True;
   Timer1.Interval := 150;
 
   AppName := ExtractFileName(Application.ExeName);
@@ -525,7 +526,7 @@ begin
     EndTime := Now + (Timer1.Tag * OneSecond);
   end;
 
-  if Timer1.Tag < 0 then
+  if Timer1.Tag <= 0 then
     SetTimer();
 
   if Timer1.Enabled then
@@ -781,10 +782,12 @@ end;
  // TODO Animate icon between alarm icon and main so it blinks every second
  // Instead of playing icon, animate the clock hands so they go around?
  // http://delphi.about.com/od/kbwinshell/l/aa122501a.htm
- // TODO Only update time if it's different (stop flashing?)
 procedure TMainForm.UpdateTime();
 begin
-  Count.Caption     := SecondsToTime(Timer1.Tag);
+  // Changing caption while it's not visible keeps time from flashing
+  Count.Visible := False;
+  Count.Caption := SecondsToTime(Timer1.Tag);
+  Count.Visible := True;
   MenuCount.Caption := Count.Caption;
   if Timer1.Enabled then
   begin
@@ -863,7 +866,9 @@ end;
 
 procedure TMainForm.ShowDoneMessage(Msg: string);
 begin
-  ShowMessage(Msg);
+  // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
+  Windows.MessageBox(GetHandle(), pChar(msg), 'Done',
+     MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
   if LoopAudio then
     StopAudio();
 end;
