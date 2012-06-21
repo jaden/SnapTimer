@@ -10,8 +10,8 @@ What to do when time is up
     Shake the window http://delphi.about.com/od/adptips2005/qt/windowshake.htm (set how many seconds)
     Bring app to front
     Play system beep (MessageBeep(-1); in MMSystem, http://sheepdogguides.com/dt2g.htm
-    Restart or shutdown windows (they can already do this by running a command)
-    Flip colors of background and foreground
+    Restart or shutdown windows (this can already be done by running a command - document it? add examples to choose from?)
+    Flip colors of background and foreground (set them back when timer is restarted)
 
 Option to restore defaults (equivalent of deleting the .ini file)
 
@@ -192,6 +192,10 @@ Set shortcut to start minimized, but app still opens w/o being minimized
 Make color of alarm in systray less pink, more red
 
 Get more ideas for timer from TinyCountdown http://code.google.com/p/tinytool/source/checkout
+
+Double-click on the tray icon to show application.
+
+If write's fail to Snaptimer.ini in current directory, try writing to the user profile folder or program data, then give an error message if that fails too.
 
 ========================
 Features for version 0.2
