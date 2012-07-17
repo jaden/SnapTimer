@@ -197,6 +197,8 @@ Double-click on the tray icon to show application.
 
 If write's fail to Snaptimer.ini in current directory, try writing to the user profile folder or program data, then give an error message if that fails too.
 
+If user forgets to unzip file, is there a way for Snaptimer to tell and either cope with the sound files being in a zip file or alert the user that sounds won't work?
+
 ========================
 Features for version 0.2
 ========================
