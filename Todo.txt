@@ -202,6 +202,9 @@ If write's fail to Snaptimer.ini in current directory, try writing to the user p
 
 If user forgets to unzip file, is there a way for Snaptimer to tell and either cope with the sound files being in a zip file or alert the user that sounds won't work?
 
+Add button for countdown repeat (or add another way to do it that doesn't require an extra button).  Add visual on how many times the counter has been repeated.
+
+
 ========================
 Features for version 0.2
 ========================
