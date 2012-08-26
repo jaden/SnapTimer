@@ -26,6 +26,7 @@ Keyboard shortcuts
     Global shortcut to show window (configurable)
     p to pause
     r to reset
+    m to minimize the window
     
 More command line arguments, like the alarm, auto start, etc.  Add a parameter to use different .ini files.
     Formats of command lines to accept:
@@ -165,7 +166,9 @@ Allow parameters to be specified in the "Run program" field, for example: "C:/Pr
 
 Add .ini option to not create a tray icon
 
-Add support for a series of named alarms (so you could do 10 minutes on, 5 minutes for a break, etc) and be able to chain them together in any order and cycle through them automatically - making it work better for pomodoro method
+Add support for a series of named alarms (so you could do 10 minutes on, 5 minutes for a break, etc) and be able to chain them together in any order and cycle through them automatically - making it work better for pomodoro method.
+
+Add dropdown below the timer to let them choose from the named alarms
 
 Option to stop a repeating alarm after some number of cycles or certain period of time
 
@@ -177,7 +180,7 @@ https://forums.embarcadero.com/thread.jspa?messageID=175226&#175226 Instead of u
 Set interval to 500ms, when user hits start, set the time to end, then in countdown see if current time is higher than time to stop
 http://wiki.lazarus.freepascal.org/EpikTimer - it's in there, just need to try it out
 
-What about stopwatch mode?  That's still inaccurate, but I can't use a fixed time - how do I get that to work?
+What about stopwatch mode?  That's still inaccurate on old systems, but I can't use a fixed time - how do I get that to work?
 
 Make about page a unit that can be included for other apps (like SnapMD5)
 
