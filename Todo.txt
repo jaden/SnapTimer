@@ -13,6 +13,7 @@ What to do when time is up
     Restart or shutdown windows (this can already be done by running a command - document it? add examples to choose from?)
     Flip colors of background and foreground (set them back when timer is restarted)
     Flash the whole screen
+    Keep counting (going negative) to show the user how long it's been since the time was up
 
 Option to restore defaults (equivalent of deleting the .ini file)
 
