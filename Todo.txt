@@ -14,6 +14,7 @@ What to do when time is up
     Flip colors of background and foreground (set them back when timer is restarted)
     Flash the whole screen
     Keep counting (going negative) to show the user how long it's been since the time was up
+    Make tray alert customizable (color, background color, size and duration of being visible)
 
 Option to restore defaults (equivalent of deleting the .ini file)
 
@@ -29,6 +30,7 @@ Keyboard shortcuts
     p to pause
     r to reset
     m to minimize the window
+    Spacebar to start/stop (like media players)
     
 More command line arguments, like the alarm, auto start, etc.  Add a parameter to use different .ini files.
     Formats of command lines to accept:
