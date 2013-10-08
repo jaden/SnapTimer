@@ -15,6 +15,7 @@ What to do when time is up
     Flash the whole screen
     Keep counting (going negative) to show the user how long it's been since the time was up
     Make tray alert customizable (color, background color, size and duration of being visible)
+    Add more options to dialog - ask if user wants to restart timer, start a new timer, etc
 
 Option to restore defaults (equivalent of deleting the .ini file)
 
@@ -31,6 +32,7 @@ Keyboard shortcuts
     r to reset
     m to minimize the window
     Spacebar to start/stop (like media players)
+    a - Toggle always on top
     
 More command line arguments, like the alarm, auto start, etc.  Add a parameter to use different .ini files.
     Formats of command lines to accept:
@@ -51,12 +53,12 @@ Allow setting of hours or seconds as an option? hh:mm or hh:mm:ss
 
 Change the text to look like a digital clock instead of plain text
     Use images for the numbers? 
-    Draw the numbers on a canvas
+    Draw the numbers on a canvas - LED controls?
     It would keep text from shifting slightly when a 1 goes in the minutes' tens place.  If that bothers you, use a monospace font
 
 Add an analog mode that shows a clock face and draw the hands going around
 
-Test with different font sizes (huge fonts, small fonts)
+Test with different font sizes for the controls (huge fonts, small fonts)
 
 Add progress bar that counts down until it's done
 
@@ -96,9 +98,17 @@ Run notifications at a certain clock time instead of when the timer reaches 0
 
 Make dialogs not show up in taskbar (so nothing appears if the main form is minimized to tray and you open about page or options) I set ShowInTaskBar to stNever, but it still shows up.
 
-When font size changes, automatically resize the window using the viewable rectangle to show all the text.  If I set the form's AutoSize to true, it works on startup (but could use some tweaks), but I can't seem to get it to work after the options dialog is displayed.  What about creating a simple example to see if I can get it to resize the form?  What about using vector graphics?
+When font size changes, automatically resize the window using the viewable rectangle to show all the text.  If I set the form's AutoSize to true, it works on startup (but could use some tweaks), but I can't seem to get it to work after the options dialog is displayed.  What about creating a simple example to see if I can get it to resize the form? 
+Automatic resize with font change - if it proves too challenging, what about drawing the fonts on a canvas? (post on lazarus forum for help, resize works on startup, how can I get it to work after font size change?)
+What about using vector graphics?
 What about drawing with the font?
 I can set the width of the window, and I should be able to get the length of the text - make sure there is enough space to show all the text.
+Answer from forum: http://wiki.lazarus.freepascal.org/Developing_with_Graphics#Create_a_custom_control_which_draws_itself
+You can draw your clock-style digits with narrow hexagons (TCanvas.Polygon)
+
+What about writing text on a canvas to dynamically size?
+http://wiki.lazarus.freepascal.org/Developing_with_Graphics#Drawing_a_text_limited_on_the_width
+http://www.delphitricks.com/source-code/graphic/draw_multiple_text_lines_on_a_canvas.html
 
 Change start/pause images into an image list TImageList - resizing seems to be messing this up a bit, so it would be good to do
 
@@ -108,15 +118,7 @@ If custom location is going to be off the screen, ignore the location and go wit
 
 Write unit tests - fpcunit module has Junit-like syntax
 
-* Automatic resize with font change - if it proves too challenging, what about drawing the fonts on a canvas? (post on lazarus forum for help, resize works on startup, how can I get it to work after font size change?)
-* Get rid of flickering of the menu when timer is started/stopped or window is resized.  Why is it getting redrawn?
-
-Answer from forum: http://wiki.lazarus.freepascal.org/Developing_with_Graphics#Create_a_custom_control_which_draws_itself
-You can draw your clock-style digits with narrow hexagons (TCanvas.Polygon)
-
-What about writing text on a canvas to dynamically size?
-http://wiki.lazarus.freepascal.org/Developing_with_Graphics#Drawing_a_text_limited_on_the_width
-http://www.delphitricks.com/source-code/graphic/draw_multiple_text_lines_on_a_canvas.html
+Get rid of flickering of the menu when timer is started/stopped or window is resized.  Why is it getting redrawn?
 
 Turn README into a CHM file (at least the content section)
 Add screenshots 
@@ -150,6 +152,10 @@ Rework the code to use Model, View, Controller
 Add a license (GPLv3?)
 
 Defect: Set to remember position but this only works when closing and reopening the program.  It should work on minimize and restore from system tray. To reproduce set to minimize to tray and remember position. Move window somewhere, minimize, then right click tray icon and hit show application. application reappears at place it was opened to instead of place it was minimized from.  Windows 7
+Also in Windows 7, if you shake another window to make all other windows disappear with Snaptimer being one of those, it gets the following error:
+[TCustomForm.SetFocus] Mainform: TMainForm Can not focus.
+Press OK to ignore and risk data corruption.
+Press Cancel to kill the program.
 
 Have an option to continue counting down once the timer hits zero so people can see how much time passed since the alarm
 
@@ -202,7 +208,8 @@ Make color of alarm in systray less pink, more red
 
 Get more ideas for timer from TinyCountdown http://code.google.com/p/tinytool/source/checkout
 
-Double-click on the tray icon to show application, single click to toggle timer
+Double-click on the tray icon to show application, single click to toggle timer.
+Have option to disable single-click to toggle timer.
 
 If write's fail to Snaptimer.ini in current directory, try writing to the user profile folder or program data, then give an error message if that fails too.
 
@@ -214,6 +221,9 @@ Add random countdown within a range for random check-ins (like tracking students
 
 Show countdown in tray icon
 
+Set times to play a sound at certain points during the countdown, e.g. 20 minute countdown, play sound at 10 minutes and 5 minutes.
+
+Add option to hide seconds during countdown
 
 ========================
 Features for version 0.2
@@ -233,3 +243,4 @@ Aspirational
 * Refactor to MVC
 * Reorganize the options dialog
 * Create installer
+* Full suite of unit tests
