@@ -79,6 +79,8 @@ Steve Pavlina's newsletter to do 15 minute chunks
 Make stopwatch mode show tenths of seconds instead of just seconds?
 Have option to show tenths of seconds for timer mode too
 
+Bug: Stopwatch mode goes immediately to 1s
+
 Look at http://gtd-timer.com/moreinfo.htm for settings and ideas
 
 Big screen view: http://www.portablefreeware.com/?id=1920&ts=1280016601
