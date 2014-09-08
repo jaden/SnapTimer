@@ -1,7 +1,7 @@
 object OptionsForm: TOptionsForm
-  Left = 1278
+  Left = 296
   Height = 234
-  Top = 734
+  Top = 537
   Width = 550
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
@@ -13,7 +13,7 @@ object OptionsForm: TOptionsForm
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '0.9.30'
+  LCLVersion = '1.2.0.3'
   object BtnOk: TButton
     Left = 384
     Height = 25
@@ -342,9 +342,9 @@ object OptionsForm: TOptionsForm
         TabOrder = 0
         object Label1: TLabel
           Left = 6
-          Height = 16
+          Height = 15
           Top = 6
-          Width = 24
+          Width = 23
           Caption = 'Size:'
           ParentColor = False
         end
@@ -370,17 +370,17 @@ object OptionsForm: TOptionsForm
         end
         object LabelTextColor: TLabel
           Left = 126
-          Height = 16
+          Height = 15
           Top = 6
-          Width = 33
+          Width = 32
           Caption = 'Color:'
           ParentColor = False
         end
         object LabelTextColor1: TLabel
           Left = 286
-          Height = 16
+          Height = 15
           Top = 6
-          Width = 68
+          Width = 67
           Caption = 'Background:'
           ParentColor = False
         end

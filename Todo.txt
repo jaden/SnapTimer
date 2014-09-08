@@ -17,6 +17,8 @@ What to do when time is up
     Make tray alert customizable (color, background color, size and duration of being visible)
     Add more options to dialog - ask if user wants to restart timer, start a new timer, etc
 
+Add option to give warnings before time is up, so kids can save their game.  5 minute, 2 minute, custom?  Also have place for message, "Warning, there are %minutes% left" that pops up as notification without having to be dealt with.
+
 Option to restore defaults (equivalent of deleting the .ini file)
 
 Implement compact mode / mini - show just the time without buttons or menus
@@ -50,6 +52,8 @@ Alarm option to kill a running task
 Is there a way to not need to have it run as administrator to write to the .ini file?  If it's not in Program Files, it shouldn't need to
 
 Allow setting of hours or seconds as an option? hh:mm or hh:mm:ss
+
+Option to hide the hours from displaying - or hide the hours if the total amount of time is less than 1 hour?
 
 Change the text to look like a digital clock instead of plain text
     Use images for the numbers? 
@@ -226,6 +230,10 @@ Show countdown in tray icon
 Set times to play a sound at certain points during the countdown, e.g. 20 minute countdown, play sound at 10 minutes and 5 minutes.
 
 Add option to hide seconds during countdown
+
+Fix bug with Chrome where it stops showing URLs in status bar - is it something I can fix?
+
+A way to title different, parallel Snaptimer windows to identify what the timer represents.
 
 ========================
 Features for version 0.2

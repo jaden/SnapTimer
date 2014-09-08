@@ -1,7 +1,7 @@
 object AboutForm: TAboutForm
-  Left = 1363
+  Left = 1184
   Height = 123
-  Top = 409
+  Top = 907
   Width = 328
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
@@ -13,7 +13,7 @@ object AboutForm: TAboutForm
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '0.9.30'
+  LCLVersion = '1.2.0.3'
   object Image1: TImage
     Left = 8
     Height = 32
@@ -309,9 +309,9 @@ object AboutForm: TAboutForm
   object UrlLbl: TLabel
     Cursor = crHandPoint
     Left = 8
-    Height = 16
+    Height = 15
     Top = 96
-    Width = 62
+    Width = 61
     Caption = 'Project URL'
     Font.Color = clHotLight
     Font.Style = [fsUnderline]
@@ -321,9 +321,9 @@ object AboutForm: TAboutForm
   end
   object TitleLbl: TLabel
     Left = 48
-    Height = 16
+    Height = 15
     Top = 8
-    Width = 42
+    Width = 41
     Caption = 'TitleLbl'
     Font.Style = [fsBold]
     ParentColor = False
@@ -331,9 +331,9 @@ object AboutForm: TAboutForm
   end
   object TextLbl: TLabel
     Left = 48
-    Height = 16
+    Height = 15
     Top = 40
-    Width = 39
+    Width = 38
     Caption = 'TextLbl'
     ParentColor = False
   end

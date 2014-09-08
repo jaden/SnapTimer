@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 1413
-  Height = 114
-  Top = 573
-  Width = 191
+  Left = 1590
+  Height = 139
+  Top = 613
+  Width = 193
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
   HorzScrollBar.Visible = False
@@ -11,8 +11,8 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = Minutes
   Caption = 'SnapTimer'
-  ClientHeight = 94
-  ClientWidth = 191
+  ClientHeight = 119
+  ClientWidth = 193
   KeyPreview = True
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -22,7 +22,7 @@ object MainForm: TMainForm
   OnShow = OnShowForm
   OnWindowStateChange = FormWindowStateChange
   Position = poScreenCenter
-  LCLVersion = '0.9.30.4'
+  LCLVersion = '1.2.0.3'
   object TimeLabel: TLabel
     AnchorSideRight.Control = Minutes
     Left = 7
@@ -446,10 +446,9 @@ object MainForm: TMainForm
   object Count: TStaticText
     Cursor = crHandPoint
     Left = 0
-    Height = 64
-    Top = 30
-    Width = 239
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Height = 88
+    Top = 24
+    Width = 189
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
     BorderSpacing.Right = 2

@@ -119,6 +119,7 @@ type
     FormerHeight : integer;
     EndTime: TDateTime;
     StartTime: TDateTime;
+    CountdownDone: boolean;
   public
     { public declarations }
   end;
@@ -286,6 +287,7 @@ begin
   Self.DoubleBuffered := True;
   Count.DoubleBuffered := True;
   Timer1.Interval := 150;
+  CountdownDone := False;
 
   AppName := ExtractFileName(Application.ExeName);
   IniFilename := ExtractFilePath(Application.ExeName) + ChangeFileExt(AppName, '.ini');
@@ -393,6 +395,7 @@ begin
   MenuToggle.Caption := BTN_PAUSE;
   TrayMenuToggle.Caption := BTN_PAUSE;
   TrayIconMain.Icon  := ImgIconRunning.Picture.Icon;
+
   if TickingOn then
     PlayTicking();
 end;
@@ -517,7 +520,6 @@ begin
   if Minutes.Value = 0 then
   begin
     Mode := MODE_STOPWATCH;
-    // TODO Get this to not bounce around after pause and resume
     StartTime := Now - (Timer1.Tag * OneSecond);
   end
   else
@@ -526,15 +528,20 @@ begin
     EndTime := Now + (Timer1.Tag * OneSecond);
   end;
 
-  if Timer1.Tag <= 0 then
-    SetTimer();
-
   if Timer1.Enabled then
   begin
     TrayIconMain.Icon := ImgIconPaused.Picture.Icon;
     DisableTimer();
   end
   else
+    if CountdownDone then
+    begin
+        // TODO When restarting after countdown has elapsed, quickly jumps from
+        // starting number to next one - fix?
+        CountdownDone := False;
+        ResetCountdown(Sender);
+        EndTime := Now + (Timer1.Tag * OneSecond);
+    end;
     EnableTimer();
 end;
 
@@ -552,6 +559,7 @@ begin
       Timer1.Tag := 0;
       UpdateTime();
       DisableTimer();
+      CountdownDone := True;
       Application.Title := APP_NAME;
       if DoneAudioEnabled then
         PlayAudio(DoneAudio, LoopAudio);
@@ -869,8 +877,7 @@ begin
   // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
   Windows.MessageBox(GetHandle(), pChar(msg), 'Done',
      MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
-  if LoopAudio then
-    StopAudio();
+  StopAudio();
 end;
 
 function TMainForm.GetHandle(): HWND;
