@@ -40,6 +40,8 @@ More command line arguments, like the alarm, auto start, etc.  Add a parameter t
     Formats of command lines to accept:
     http://sourceforge.net/projects/launchy/forums/forum/766269/topic/2089292
     http://www.orzeszek.org/dev/timer/
+    
+Create parental mode where parents can set it up for the kids to use.  It would remove the ability to close the window and disable pausing the timer.  Read configuration data all from the .ini file.
 
 Allow creation of saved settings for timers - alarm method and countdown time
 Different .ini file for each setting, load the ini file from command line?
