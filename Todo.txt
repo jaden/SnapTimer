@@ -237,6 +237,8 @@ Fix bug with Chrome where it stops showing URLs in status bar - is it something 
 
 A way to title different, parallel Snaptimer windows to identify what the timer represents.
 
+Instead of a fixed message, have the option of specifying a file of messages and show a random line for each elapsed timer.
+
 ========================
 Features for version 0.2
 ========================
