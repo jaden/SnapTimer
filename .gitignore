@@ -8,3 +8,6 @@ Deploy
 *.res
 *.exe
 *.swp
+*.ini
+*.lrs
+*.obj
