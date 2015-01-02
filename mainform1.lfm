@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 1590
-  Height = 142
-  Top = 613
+  Left = 1652
+  Height = 242
+  Top = 436
   Width = 377
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
@@ -11,8 +11,10 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = Minutes
   Caption = 'SnapTimer'
-  ClientHeight = 122
+  ClientHeight = 222
   ClientWidth = 377
+  Constraints.MinHeight = 70
+  Constraints.MinWidth = 180
   KeyPreview = True
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -446,17 +448,16 @@ object MainForm: TMainForm
   object Count: TStaticText
     Cursor = crHandPoint
     Left = 2
-    Height = 90
+    Height = 190
     Top = 32
     Width = 373
     Align = alBottom
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
-    AutoSize = True
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
     BorderSpacing.Right = 2
-    BorderStyle = sbsSingle
+    BorderStyle = sbsSunken
     Caption = '00:00:00'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -48
@@ -473,8 +474,8 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = Countdown
     OnStartTimer = Countdown
-    left = 328
-    top = 8
+    left = 192
+    top = 160
   end
   object TrayIconMain: TTrayIcon
     BalloonFlags = bfInfo
@@ -520,12 +521,12 @@ object MainForm: TMainForm
     }
     Visible = True
     OnClick = ToggleCountdown
-    left = 312
-    top = 64
+    left = 112
+    top = 160
   end
   object MainMenu1: TMainMenu
-    left = 272
-    top = 8
+    left = 24
+    top = 104
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuToggle: TMenuItem
@@ -566,8 +567,8 @@ object MainForm: TMainForm
     end
   end
   object TrayMenu: TPopupMenu
-    left = 224
-    top = 8
+    left = 24
+    top = 160
     object MenuCount: TMenuItem
       Caption = 'Countdown'
       Enabled = False
@@ -605,8 +606,8 @@ object MainForm: TMainForm
     end
   end
   object PopupMenuCompact: TPopupMenu
-    left = 232
-    top = 64
+    left = 128
+    top = 104
     object MenuCompact: TMenuItem
       Caption = 'Toggle compact mode'
       OnClick = ToggleCompact

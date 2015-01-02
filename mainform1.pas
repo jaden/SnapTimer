@@ -10,6 +10,8 @@ uses
   Windows, StrUtils, DateUtils;
 
 type
+  TMode = (Timer, Stopwatch);
+  TPosition = (Center, Remember, TopLeft, TopRight, BottomLeft, BottomRight);
 
   { TMainForm }
 
@@ -104,7 +106,7 @@ type
     DoneAudioEnabled: boolean;
     DoneApp: string;
     DoneAppEnabled: boolean;
-    WndPosition: integer;
+    WndPosition: TPosition;
     WndPositions: TStrings;
     WndHeight: integer;
     WndWidth: integer;
@@ -112,11 +114,11 @@ type
     WndLeft: integer;
     WndHandle: HWND;
     SecondsMode: boolean; // Undocumented mode to treat minutes as seconds
-    Mode: byte;
+    Mode: TMode;
     CompactMode: boolean;
     FontSizeChanged : boolean;
-    FormerWidth : integer;
-    FormerHeight : integer;
+    //FormerWidth : integer;
+    //FormerHeight : integer;
     EndTime: TDateTime;
     StartTime: TDateTime;
     CountdownDone: boolean;
@@ -134,9 +136,6 @@ implementation
 { TMainForm }
 
 const
-  MODE_TIMER     = 1;
-  MODE_STOPWATCH = 2;
-
   APP_NAME      = 'SnapTimer';
   INI_SEC_MAIN  = 'Main';
   INI_SEC_ALARMS = 'Alarms';
@@ -191,13 +190,6 @@ const
   LBL_MINUTES = '&Minutes:';
   LBL_SECONDS = '&Seconds:';
 
-  POS_CENTER    = 0;
-  POS_REMEMBER  = 1;
-  POS_TOP_LEFT  = 2;
-  POS_TOP_RIGHT = 3;
-  POS_BOT_LEFT  = 4;
-  POS_BOT_RIGHT = 5;
-
   // Default values
   DEF_TIME      = 15;
   DEF_DONE_MSG  = 'Time''s up';
@@ -219,7 +211,7 @@ const
   DEF_TICKING_PATH = '.\sounds\ticking\ticking.wav';
   DEF_AUTOSAVE  = True;
   DEF_SECONDS_MODE = False;
-  DEF_POSITION  = POS_CENTER;
+  DEF_POSITION  = Ord(Center);
   DEF_HEIGHT    = 149;
   DEF_WIDTH     = 214;
   DEF_FONT_NAME = 'Arial';
@@ -271,7 +263,7 @@ begin
   DoneApp     := DEF_DONE_APP;
   DoneAppEnabled := DEF_DONE_APP_ON;
   SecondsMode := DEF_SECONDS_MODE;
-  WndPosition := DEF_POSITION;
+  WndPosition := TPosition(DEF_POSITION);
 
   WndPositions := TStringList.Create;
   WndPositions.Add('Centered');
@@ -281,7 +273,7 @@ begin
   WndPositions.Add('Bottom left');
   WndPositions.Add('Bottom right');
 
-  Mode := MODE_TIMER;
+  Mode := Timer;
   CompactMode := False;
   AudioPlaying := False;
   Self.DoubleBuffered := True;
@@ -333,7 +325,7 @@ begin
     DoneAppEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_APP_ON, DEF_DONE_APP_ON);
     WndHeight := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_HEIGHT, DEF_HEIGHT);
     WndWidth := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_WIDTH, DEF_WIDTH);
-    WndPosition := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_POSITION, DEF_POSITION);
+    WndPosition := TPosition(IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_POSITION, DEF_POSITION));
     WndLeft := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_LEFT, 0);
     WndTop := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_TOP, 0);
 
@@ -438,7 +430,7 @@ begin
     CheckSecondsMode.Checked  := SecondsMode;
 
     PositionCombo.Items     := WndPositions;
-    PositionCombo.ItemIndex := WndPosition;
+    PositionCombo.ItemIndex := Ord(WndPosition);
 
     PageControl1.TabIndex := 0;
 
@@ -473,7 +465,7 @@ begin
       TickingOn    := CheckTicking.Checked;
       AutoSave     := CheckAutoSave.Checked;
       SecondsMode  := CheckSecondsMode.Checked;
-      WndPosition  := PositionCombo.ItemIndex;
+      WndPosition  := TPosition(PositionCombo.ItemIndex);
       //if not (Count.Font.Size = f.Size) then
       //begin
       	//FontSizeChanged := True;
@@ -519,12 +511,12 @@ begin
 
   if Minutes.Value = 0 then
   begin
-    Mode := MODE_STOPWATCH;
+    Mode := Stopwatch;
     StartTime := Now - (Timer1.Tag * OneSecond);
   end
   else
   begin
-    Mode := MODE_TIMER;
+    Mode := Timer;
     EndTime := Now + (Timer1.Tag * OneSecond);
   end;
 
@@ -547,7 +539,7 @@ end;
 
 procedure TMainForm.Countdown(Sender: TObject);
 begin
-  if MODE = MODE_STOPWATCH then
+  if MODE = Stopwatch then
   begin
     Timer1.Tag := SecondsBetween(StartTime, Now);
     UpdateTime();
@@ -598,15 +590,31 @@ end;
 
 procedure TMainForm.OnShowForm(Sender: TObject);
 var
-  w: integer;
-  h: integer;
+  //w: integer;
+  //h: integer;
   wRect: TRect;
-  cRect: TRect;
+  //cRect: TRect;
   flags: integer;
+
 begin
   Self.Position := poDesigned;
   WndHandle := GetHandle();
   GetWindowRect(WndHandle, wRect);
+  flags := SWP_SHOWWINDOW;
+
+  case WndPosition of
+       Remember: SetWindowPos(WndHandle, HWND_TOP, WndLeft, WndTop, WndWidth, WndHeight, flags);
+       TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, flags);
+       TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - WndWidth, 0, WndWidth, WndHeight, flags);
+       BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - WndHeight, WndWidth, WndHeight, flags);
+       BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - WndWidth,
+                    Monitor.WorkareaRect.Bottom - WndHeight, WndWidth, WndHeight, flags);
+       Center:
+         begin
+              SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
+              Self.Position := poScreenCenter;
+         end;
+  end;
 
   // TODO Get this working for window size (getpreferred size gets form, not window)
   // Get preferred size before font change, then after and add or subtract that delta from the
@@ -645,39 +653,6 @@ begin
     //exit;
   end;
 
-  flags := SWP_SHOWWINDOW;
-
-  if WndPosition = POS_REMEMBER then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, WndLeft, WndTop, WndWidth, WndHeight, flags);
-  end
-  else if WndPosition = POS_TOP_LEFT then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, flags);
-  end
-  else if WndPosition = POS_TOP_RIGHT then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
-      WndWidth, 0, WndWidth, WndHeight, flags);
-  end
-  else if WndPosition = POS_BOT_LEFT then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom -
-      WndHeight, WndWidth, WndHeight, flags);
-  end
-  else if WndPosition = POS_BOT_RIGHT then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right -
-      WndWidth, Monitor.WorkareaRect.Bottom - WndHeight, WndWidth,
-      WndHeight, flags);
-  end
-  else if WndPosition = POS_CENTER then
-  begin
-    SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight,
-      SWP_SHOWWINDOW or SWP_NOMOVE);
-    Self.Position := poScreenCenter;
-  end;
-
   UpdateAlwaysOnTop(AlwaysOnTop);
 end;
 
@@ -706,7 +681,7 @@ begin
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_WIDTH, wRect.Right - wRect.Left);
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_LEFT, wRect.Left);
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_TOP, wRect.Top);
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_POSITION, WndPosition);
+    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_POSITION, Ord(WndPosition));
 
     IniFile.WriteString(INI_SEC_ALARMS, INI_DONE_MESSAGE, DoneMessage);
     IniFile.WriteBool(INI_SEC_ALARMS, INI_DONE_MESSAGE_ON, DoneMessageEnabled);
