@@ -1,19 +1,19 @@
 object AboutForm: TAboutForm
-  Left = 1184
-  Height = 123
-  Top = 907
-  Width = 328
+  Left = 1619
+  Height = 156
+  Top = 900
+  Width = 356
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About SnapTimer'
-  ClientHeight = 123
-  ClientWidth = 328
+  ClientHeight = 156
+  ClientWidth = 356
   KeyPreview = True
   OnCreate = ShowAboutForm
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '1.2.0.3'
+  LCLVersion = '1.2.6.0'
   object Image1: TImage
     Left = 8
     Height = 32
@@ -308,9 +308,9 @@ object AboutForm: TAboutForm
   end
   object UrlLbl: TLabel
     Cursor = crHandPoint
-    Left = 8
+    Left = 48
     Height = 15
-    Top = 96
+    Top = 88
     Width = 61
     Caption = 'Project URL'
     Font.Color = clHotLight
@@ -321,10 +321,11 @@ object AboutForm: TAboutForm
   end
   object TitleLbl: TLabel
     Left = 48
-    Height = 15
+    Height = 32
     Top = 8
-    Width = 41
+    Width = 84
     Caption = 'TitleLbl'
+    Font.Height = -24
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
@@ -332,15 +333,15 @@ object AboutForm: TAboutForm
   object TextLbl: TLabel
     Left = 48
     Height = 15
-    Top = 40
+    Top = 56
     Width = 38
     Caption = 'TextLbl'
     ParentColor = False
   end
   object Button1: TButton
-    Left = 248
+    Left = 272
     Height = 25
-    Top = 8
+    Top = 120
     Width = 75
     Caption = 'Close'
     OnClick = Exit

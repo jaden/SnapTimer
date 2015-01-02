@@ -5,9 +5,9 @@ unit MainForm1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
   Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Settings, MMSystem,
-  Windows, StrUtils, typinfo, DateUtils;
+  Windows, StrUtils, DateUtils;
 
 type
 

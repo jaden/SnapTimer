@@ -1,7 +1,7 @@
 object OptionsForm: TOptionsForm
-  Left = 296
+  Left = 1594
   Height = 234
-  Top = 537
+  Top = 332
   Width = 550
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
@@ -13,7 +13,7 @@ object OptionsForm: TOptionsForm
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '1.2.0.3'
+  LCLVersion = '1.2.6.0'
   object BtnOk: TButton
     Left = 384
     Height = 25

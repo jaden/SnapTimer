@@ -5,8 +5,7 @@ unit About;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, StdCtrls, LCLIntf, Grids, Windows;
+  LResources, Forms, ExtCtrls, StdCtrls, LCLIntf;
 
 type
 
@@ -43,7 +42,7 @@ procedure TAboutForm.ShowAboutForm(Sender: TObject);
 const
   VersionStr = {$I version.inc};
 begin
-  TitleLbl.Caption := 'SnapTimer ' + VersionStr;
+  TitleLbl.Caption := 'SnapTimer - Version ' + VersionStr;
   TextLbl.Caption := 'Snapmagic Software' + sLineBreak + 'Written by Dan Hersam';
   UrlLbl.Caption := URL;
 end;
@@ -55,8 +54,7 @@ end;
 
 procedure TAboutForm.GotoUrl(Sender: TObject);
 begin
-  // TODO Replace this with OpenURL when I'm using Lazarus 0.9.29.0
-  ShellExecute(0, 'open', PChar(TLabel(Sender).Caption), nil, nil, SW_SHOWNORMAL);
+  OpenURL(URL);
 end;
 
 procedure TAboutForm.Exit(Sender: TObject);

@@ -5,8 +5,7 @@ unit settings;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, ComCtrls, Buttons, Grids, Spin;
+  SysUtils, LResources, Forms, Graphics, Dialogs, StdCtrls, ComCtrls, Spin;
 
 type
 

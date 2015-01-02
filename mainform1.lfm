@@ -1,8 +1,8 @@
 object MainForm: TMainForm
   Left = 1590
-  Height = 139
+  Height = 142
   Top = 613
-  Width = 193
+  Width = 377
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
   HorzScrollBar.Visible = False
@@ -11,8 +11,8 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = Minutes
   Caption = 'SnapTimer'
-  ClientHeight = 119
-  ClientWidth = 193
+  ClientHeight = 122
+  ClientWidth = 377
   KeyPreview = True
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -22,7 +22,7 @@ object MainForm: TMainForm
   OnShow = OnShowForm
   OnWindowStateChange = FormWindowStateChange
   Position = poScreenCenter
-  LCLVersion = '1.2.0.3'
+  LCLVersion = '1.2.6.0'
   object TimeLabel: TLabel
     AnchorSideRight.Control = Minutes
     Left = 7
@@ -445,14 +445,18 @@ object MainForm: TMainForm
   end
   object Count: TStaticText
     Cursor = crHandPoint
-    Left = 0
-    Height = 88
-    Top = 24
-    Width = 189
+    Left = 2
+    Height = 90
+    Top = 32
+    Width = 373
+    Align = alBottom
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
     BorderSpacing.Right = 2
-    BorderStyle = sbsSunken
+    BorderStyle = sbsSingle
     Caption = '00:00:00'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -48
@@ -469,8 +473,8 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = Countdown
     OnStartTimer = Countdown
-    left = 80
-    top = 64
+    left = 328
+    top = 8
   end
   object TrayIconMain: TTrayIcon
     BalloonFlags = bfInfo
@@ -516,12 +520,12 @@ object MainForm: TMainForm
     }
     Visible = True
     OnClick = ToggleCountdown
-    left = 16
+    left = 312
     top = 64
   end
   object MainMenu1: TMainMenu
-    left = 48
-    top = 64
+    left = 272
+    top = 8
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuToggle: TMenuItem
@@ -562,8 +566,8 @@ object MainForm: TMainForm
     end
   end
   object TrayMenu: TPopupMenu
-    left = 160
-    top = 72
+    left = 224
+    top = 8
     object MenuCount: TMenuItem
       Caption = 'Countdown'
       Enabled = False
@@ -601,8 +605,8 @@ object MainForm: TMainForm
     end
   end
   object PopupMenuCompact: TPopupMenu
-    left = 120
-    top = 72
+    left = 232
+    top = 64
     object MenuCompact: TMenuItem
       Caption = 'Toggle compact mode'
       OnClick = ToggleCompact
