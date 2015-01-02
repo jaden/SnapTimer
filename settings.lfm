@@ -1,7 +1,7 @@
 object OptionsForm: TOptionsForm
-  Left = 1594
+  Left = 1648
   Height = 234
-  Top = 332
+  Top = 619
   Width = 550
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
