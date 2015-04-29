@@ -23,8 +23,8 @@ Option to restore defaults (equivalent of deleting the .ini file)
 
 Implement compact mode / mini - show just the time without buttons or menus
     Always on top
-    Have progress bar
-    Show time in small font
+    Add a progress bar, visible from far away.
+    Show the wall-clock time in a small font
     Have setting so it opens in that mode.
     Write directly on the desktop? http://www.delphitricks.com/source-code/graphic/draw_directly_to_the_desktop.html
 
