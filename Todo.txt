@@ -159,6 +159,8 @@ Rework the code to use Model, View, Controller
 
 Add a license (GPLv3?)
 
+Add an option to prevent windows from going into standby/sleep while timer is active.
+
 Defect: Set to remember position but this only works when closing and reopening the program.  It should work on minimize and restore from system tray. To reproduce set to minimize to tray and remember position. Move window somewhere, minimize, then right click tray icon and hit show application. application reappears at place it was opened to instead of place it was minimized from.  Windows 7
 Also in Windows 7, if you shake another window to make all other windows disappear with Snaptimer being one of those, it gets the following error:
 [TCustomForm.SetFocus] Mainform: TMainForm Can not focus.
