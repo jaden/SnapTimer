@@ -243,6 +243,8 @@ Instead of a fixed message, have the option of specifying a file of messages and
 
 Make increment/decrement amount configurable from 5 minutes to whatever the user wants.
 
+Tray popup doesn't work in Windows 10 x64.
+
 ========================
 Features for version 0.2
 ========================
