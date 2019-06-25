@@ -526,6 +526,7 @@ begin
     DisableTimer();
   end
   else
+  begin
     if CountdownDone then
     begin
         // TODO When restarting after countdown has elapsed, quickly jumps from
@@ -535,6 +536,7 @@ begin
         EndTime := Now + (Timer1.Tag * OneSecond);
     end;
     EnableTimer();
+  end;
 end;
 
 procedure TMainForm.Countdown(Sender: TObject);
