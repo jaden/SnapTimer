@@ -91,6 +91,7 @@ type
     AlwaysOnTop: boolean;
     MinToTray: boolean;
     AutoStart: boolean;
+    HideSeconds: boolean;
     ClickTime: boolean;
     DblClickTime: boolean;
     AutoRestart: boolean;
@@ -145,6 +146,7 @@ const
   INI_ALWAYS_ON_TOP = 'AlwaysOnTop';
   INI_MIN_TO_TRAY = 'MinToTray';
   INI_AUTOSTART = 'AutoStart';
+  INI_HIDESECONDS = 'HideSeconds';
   INI_CLICKTIME = 'ClickTime';
   INI_DBLCLICKTIME = 'DoubleClickTime';
   INI_AUTORESTART = 'AutoRestart';
@@ -203,6 +205,7 @@ const
   DEF_ALWAYS_ON_TOP = False;
   DEF_MIN_TO_TRAY = False;
   DEF_AUTOSTART = False;
+  DEF_HIDESECONDS = False;
   DEF_CLICKTIME = True;
   DEF_DBLCLICKTIME = True;
   DEF_AUTORESTART = False;
@@ -248,6 +251,7 @@ begin
   AlwaysOnTop := DEF_ALWAYS_ON_TOP;
   MinToTray   := DEF_MIN_TO_TRAY;
   AutoStart   := DEF_AUTOSTART;
+  HideSeconds := DEF_HIDESECONDS;
   ClickTime   := DEF_CLICKTIME;
   DblClickTime := DEF_DBLCLICKTIME;
   AutoRestart := DEF_AUTORESTART;
@@ -304,6 +308,7 @@ begin
     AlwaysOnTop := IniFile.ReadBool(INI_SEC_MAIN, INI_ALWAYS_ON_TOP, DEF_ALWAYS_ON_TOP);
     MinToTray := IniFile.ReadBool(INI_SEC_MAIN, INI_MIN_TO_TRAY, DEF_MIN_TO_TRAY);
     AutoStart := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSTART, DEF_AUTOSTART);
+    HideSeconds := IniFile.ReadBool(INI_SEC_MAIN, INI_HIDESECONDS, DEF_HIDESECONDS);
     ClickTime := IniFile.ReadBool(INI_SEC_MAIN, INI_CLICKTIME, DEF_CLICKTIME);
     DblClickTime := IniFile.ReadBool(INI_SEC_MAIN, INI_DBLCLICKTIME, DEF_DBLCLICKTIME);
     AutoRestart := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTORESTART, DEF_AUTORESTART);
@@ -421,6 +426,7 @@ begin
     CheckAlwaysOnTop.Checked  := AlwaysOnTop;
     CheckMinToTray.Checked    := MinToTray;
     CheckAutostart.Checked    := AutoStart;
+    CheckHideSeconds.Checked  := HideSeconds;
     CheckClicktime.Checked    := ClickTime;
     CheckDblClickTime.Checked := DblClickTime;
     CheckAutoRestart.Checked  := AutoRestart;
@@ -458,6 +464,7 @@ begin
       AlwaysOnTop  := CheckAlwaysOnTop.Checked;
       MinToTray    := CheckMinToTray.Checked;
       AutoStart    := CheckAutostart.Checked;
+      HideSeconds  := CheckHideSeconds.Checked;
       ClickTime    := CheckClicktime.Checked;
       DblClickTime := CheckDblClickTime.Checked;
       AutoRestart  := CheckAutoRestart.Checked;
@@ -667,6 +674,7 @@ begin
     IniFile.WriteBool(INI_SEC_MAIN, INI_ALWAYS_ON_TOP, AlwaysOnTop);
     IniFile.WriteBool(INI_SEC_MAIN, INI_MIN_TO_TRAY, MinToTray);
     IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSTART, AutoStart);
+    IniFile.WriteBool(INI_SEC_MAIN, INI_HIDESECONDS, HideSeconds);
     IniFile.WriteBool(INI_SEC_MAIN, INI_CLICKTIME, ClickTime);
     IniFile.WriteBool(INI_SEC_MAIN, INI_DBLCLICKTIME, DblClickTime);
     IniFile.WriteBool(INI_SEC_MAIN, INI_AUTORESTART, AutoRestart);
@@ -750,7 +758,14 @@ begin
   h      := Seconds div 3600;
   m      := Seconds div 60 - h * 60;
   s      := Seconds - (h * 3600 + m * 60);
-  Result := SysUtils.Format('%.2d:%.2d:%.2d', [h, m, s]);
+  if HideSeconds then
+  begin
+    Result := SysUtils.Format('%.2d:%.2d', [h, m]);
+  end
+  else
+  begin
+    Result := SysUtils.Format('%.2d:%.2d:%.2d', [h, m, s]);
+  end;
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
