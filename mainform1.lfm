@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 1652
-  Height = 242
-  Top = 436
-  Width = 377
+  Left = 533
+  Height = 363
+  Top = 312
+  Width = 392
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
   HorzScrollBar.Visible = False
@@ -11,10 +11,11 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = Minutes
   Caption = 'SnapTimer'
-  ClientHeight = 222
-  ClientWidth = 377
-  Constraints.MinHeight = 70
-  Constraints.MinWidth = 180
+  ClientHeight = 333
+  ClientWidth = 392
+  Constraints.MinHeight = 105
+  Constraints.MinWidth = 240
+  DesignTimePPI = 144
   KeyPreview = True
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -24,27 +25,28 @@ object MainForm: TMainForm
   OnShow = OnShowForm
   OnWindowStateChange = FormWindowStateChange
   Position = poScreenCenter
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '2.0.10.0'
   object TimeLabel: TLabel
     AnchorSideRight.Control = Minutes
-    Left = 7
-    Height = 16
-    Top = 5
-    Width = 47
+    Left = 10
+    Height = 24
+    Top = 8
+    Width = 70
     AutoSize = False
-    BorderSpacing.Left = 5
-    BorderSpacing.Right = 2
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 3
     Caption = 'Minutes:'
     FocusControl = Minutes
     Layout = tlCenter
     ParentColor = False
+    ParentFont = False
   end
   object ImgStart: TImage
-    Left = 125
-    Height = 25
+    Left = 168
+    Height = 38
     Hint = 'Start'
-    Top = 1
-    Width = 25
+    Top = 3
+    Width = 38
     OnClick = ToggleCountdown
     ParentShowHint = False
     Picture.Data = {
@@ -108,11 +110,11 @@ object MainForm: TMainForm
     ShowHint = True
   end
   object ImgReset: TImage
-    Left = 155
-    Height = 25
+    Left = 208
+    Height = 38
     Hint = 'Reset'
-    Top = 1
-    Width = 25
+    Top = 3
+    Width = 38
     OnClick = ResetCountdown
     ParentShowHint = False
     Picture.Data = {
@@ -177,11 +179,11 @@ object MainForm: TMainForm
     ShowHint = True
   end
   object ImgPause: TImage
-    Left = 125
-    Height = 25
+    Left = 168
+    Height = 38
     Hint = 'Pause'
-    Top = 1
-    Width = 25
+    Top = 3
+    Width = 38
     OnClick = ToggleCountdown
     ParentShowHint = False
     Picture.Data = {
@@ -250,10 +252,10 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconRunning: TImage
-    Left = 155
-    Height = 15
-    Top = 40
-    Width = 10
+    Left = 232
+    Height = 22
+    Top = 60
+    Width = 15
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
       2800000010000000200000000100200000000000000000000000000000000000
@@ -296,10 +298,10 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconPaused: TImage
-    Left = 160
-    Height = 15
-    Top = 40
-    Width = 10
+    Left = 240
+    Height = 22
+    Top = 60
+    Width = 15
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
       2800000010000000200000000100200000000000000000000000000000000000
@@ -342,10 +344,10 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconDone: TImage
-    Left = 160
-    Height = 15
-    Top = 40
-    Width = 10
+    Left = 240
+    Height = 22
+    Top = 60
+    Width = 15
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
       2800000010000000200000000100200000000000000000000000000000000000
@@ -388,10 +390,10 @@ object MainForm: TMainForm
     Visible = False
   end
   object ImgIconMain: TImage
-    Left = 160
-    Height = 15
-    Top = 40
-    Width = 10
+    Left = 240
+    Height = 22
+    Top = 60
+    Width = 15
     Picture.Data = {
       055449636F6E7E04000000000100010010100000010020006804000016000000
       2800000010000000200000000100200000000000000000000000000000000000
@@ -435,32 +437,33 @@ object MainForm: TMainForm
   end
   object Minutes: TSpinEdit
     AnchorSideLeft.Side = asrBottom
-    Left = 60
-    Height = 23
-    Top = 2
-    Width = 47
-    BorderSpacing.Right = 5
+    Left = 88
+    Height = 33
+    Top = 3
+    Width = 70
+    BorderSpacing.Right = 8
     Increment = 5
     MaxValue = 5999
     OnChange = MinutesChanged
+    ParentFont = False
     TabOrder = 0
   end
   object Count: TStaticText
     Cursor = crHandPoint
-    Left = 2
-    Height = 190
+    Left = 3
+    Height = 301
     Top = 32
-    Width = 373
+    Width = 386
     Align = alBottom
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 4
-    BorderSpacing.Right = 2
+    BorderSpacing.Left = 3
+    BorderSpacing.Top = 6
+    BorderSpacing.Right = 3
     BorderStyle = sbsSunken
     Caption = '00:00:00'
     Font.CharSet = ANSI_CHARSET
-    Font.Height = -48
+    Font.Height = -72
     Font.Name = 'Arial Narrow'
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
@@ -474,8 +477,8 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = Countdown
     OnStartTimer = Countdown
-    left = 192
-    top = 160
+    Left = 288
+    Top = 240
   end
   object TrayIconMain: TTrayIcon
     BalloonFlags = bfInfo
@@ -521,12 +524,12 @@ object MainForm: TMainForm
     }
     Visible = True
     OnClick = ToggleCountdown
-    left = 112
-    top = 160
+    Left = 168
+    Top = 240
   end
   object MainMenu1: TMainMenu
-    left = 24
-    top = 104
+    Left = 36
+    Top = 156
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuToggle: TMenuItem
@@ -567,8 +570,8 @@ object MainForm: TMainForm
     end
   end
   object TrayMenu: TPopupMenu
-    left = 24
-    top = 160
+    Left = 36
+    Top = 240
     object MenuCount: TMenuItem
       Caption = 'Countdown'
       Enabled = False
@@ -606,8 +609,8 @@ object MainForm: TMainForm
     end
   end
   object PopupMenuCompact: TPopupMenu
-    left = 128
-    top = 104
+    Left = 192
+    Top = 156
     object MenuCompact: TMenuItem
       Caption = 'Toggle compact mode'
       OnClick = ToggleCompact
