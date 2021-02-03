@@ -134,6 +134,8 @@ var
 
 implementation
 
+uses msgbox;
+
 { TMainForm }
 
 const
@@ -865,10 +867,16 @@ begin
 end;
 
 procedure TMainForm.ShowDoneMessage(Msg: string);
+var MsgboxForm : TMsgBoxForm;
 begin
   // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
-  Windows.MessageBox(GetHandle(), pChar(msg), 'Done',
-     MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
+  //Windows.MessageBox(GetHandle(), pChar(msg), 'Done',
+  //   MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
+  // Custom MessageBox
+  MsgboxForm := TMsgBoxForm.Create(Self);
+  MsgBoxForm.SetText(Msg);
+  MsgboxForm.ShowModal;
+  MsgboxForm.Release;
   StopAudio();
 end;
 
