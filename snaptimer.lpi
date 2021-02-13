@@ -26,6 +26,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="ui"/>
             <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
           </SearchPaths>
           <Parsing>
@@ -63,9 +64,6 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
@@ -84,34 +82,32 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="mainform1.pas"/>
+        <Filename Value="ui\about.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="MainForm1"/>
+        <UnitName Value="About"/>
       </Unit1>
       <Unit2>
-        <Filename Value="about.pas"/>
+        <Filename Value="ui\floating.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="AboutForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="About"/>
       </Unit2>
       <Unit3>
-        <Filename Value="settings.pas"/>
+        <Filename Value="ui\mainform1.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="OptionsForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="ui\settings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -122,6 +118,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="ui"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
