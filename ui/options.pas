@@ -1,4 +1,4 @@
-unit settings;
+unit Options;
 
 {$mode objfpc}{$H+}
 
@@ -225,6 +225,6 @@ with Self.Owner as TMainForm do
 end;
 
 initialization
-  {$I settings.lrs}
+  {$I options.lrs}
 end.
 

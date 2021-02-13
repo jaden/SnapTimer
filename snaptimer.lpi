@@ -102,11 +102,13 @@
         <Filename Value="ui\mainform1.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="MainForm1"/>
       </Unit3>
       <Unit4>
-        <Filename Value="ui\settings.pas"/>
+        <Filename Value="ui\options.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="settings"/>
       </Unit4>
     </Units>
   </ProjectOptions>

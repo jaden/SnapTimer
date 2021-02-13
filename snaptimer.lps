@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="development"/>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -40,7 +40,6 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="About"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="25"/>
         <CursorPos Y="45"/>
@@ -61,15 +60,14 @@
         <Filename Value="ui\mainform1.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
+        <UnitName Value="MainForm1"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="69" Y="9"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="ui\settings.pas"/>
-        <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -77,8 +75,20 @@
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="ui\options.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="settings"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="196"/>
+        <CursorPos X="14" Y="228"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit8>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="snaptimer.lpr"/>
         <Caret Line="13" Column="26"/>
@@ -87,6 +97,10 @@
         <Filename Value="ui\about.pas"/>
         <Caret Line="45" TopLine="25"/>
       </Position2>
+      <Position3>
+        <Filename Value="ui\mainform1.pas"/>
+        <Caret Line="9" Column="69"/>
+      </Position3>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Settings, MMSystem,
+  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Options, MMSystem,
   Windows, StrUtils, DateUtils;
 
 type
