@@ -6,15 +6,13 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Options, MMSystem,
+  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, MMSystem,
   Windows, StrUtils, DateUtils;
 
 type
-  TMode = (Timer, Stopwatch);
-  TPosition = (Center, Remember, TopLeft, TopRight, BottomLeft, BottomRight);
+    TMode = (Timer, Stopwatch);
 
   { TMainForm }
-
   TMainForm = class(TForm)
     ImgIconMain: TImage;
     ImgIconRunning: TImage;
@@ -76,103 +74,43 @@ type
     procedure RunApp(Path: string);
     procedure ShowDoneMessage(Msg: string);
     procedure ShowTrayMessage(Msg: string);
-    function GetHandle(): HWND;
-    procedure SetDefaults(Sender: TObject);
-    function FontStylesToInt(Fnt: TFont): integer;
-    function IntToFontStyles(Mask: integer): TFontStyles;
+    //f GetHandle(): HWND;
     procedure SetFieldsVisible(showFields: boolean);
-    procedure UpdateAlwaysOnTop(onTop: boolean);
     procedure PlayTicking();
     function IsInteger(S: String): boolean;
-    procedure UpdateTimeCaption(newSecondsMode: boolean);
+    //procedure UpdateTimeCaption(newSecondsMode: boolean);
   private
     { private declarations }
-    IniFile: TIniFile;
-    AlwaysOnTop: boolean;
-    MinToTray: boolean;
-    AutoStart: boolean;
-    HideSeconds: boolean;
-    ClickTime: boolean;
-    DblClickTime: boolean;
-    AutoRestart: boolean;
-    LoopAudio: boolean;
     AudioPlaying: boolean;
-    TickingOn: boolean;
-    AutoSave: boolean;
-    DoneMessage: string;
-    DoneMessageEnabled: boolean;
-    DoneTrayMsg: string;
-    DoneTrayMsgEnabled: boolean;
-    DoneAudio: string;
-    DoneAudioEnabled: boolean;
-    DoneApp: string;
-    DoneAppEnabled: boolean;
-    WndPosition: TPosition;
-    WndPositions: TStrings;
-    WndHeight: integer;
-    WndWidth: integer;
-    WndTop: integer;
-    WndLeft: integer;
     WndHandle: HWND;
-    SecondsMode: boolean; // Undocumented mode to treat minutes as seconds
+    WndPositions: TStrings;
     Mode: TMode;
-    CompactMode: boolean;
     FontSizeChanged : boolean;
     //FormerWidth : integer;
     //FormerHeight : integer;
     EndTime: TDateTime;
     StartTime: TDateTime;
     CountdownDone: boolean;
+    OnShowFormFirstTime: Boolean;
+    procedure ApplyConfig(APosition: Boolean);
   public
     { public declarations }
   end;
 
 var
   MainForm:    TMainForm;
-  AppName:     string;
-  IniFilename: string;
+  //AppName:     string;
+
 
 implementation
+
+uses
+  Config;
 
 { TMainForm }
 
 const
   APP_NAME      = 'SnapTimer';
-  INI_SEC_MAIN  = 'Main';
-  INI_SEC_ALARMS = 'Alarms';
-  INI_SEC_PLACEMENT = 'Placement';
-  INI_SEC_FONTS = 'Fonts';
-  INI_MINUTES  = 'Minutes';
-  INI_ALWAYS_ON_TOP = 'AlwaysOnTop';
-  INI_MIN_TO_TRAY = 'MinToTray';
-  INI_AUTOSTART = 'AutoStart';
-  INI_HIDESECONDS = 'HideSeconds';
-  INI_CLICKTIME = 'ClickTime';
-  INI_DBLCLICKTIME = 'DoubleClickTime';
-  INI_AUTORESTART = 'AutoRestart';
-  INI_LOOP_AUDIO = 'LoopAudio';
-  INI_TICKING_ON = 'TickingEnabled';
-  INI_AUTOSAVE = 'AutoSave';
-  INI_HEIGHT   = 'WinHeight';
-  INI_WIDTH    = 'WinWidth';
-  INI_LEFT     = 'WinLeft';
-  INI_TOP      = 'WinTop';
-  INI_POSITION = 'WinPosition';
-  INI_DONE_MESSAGE = 'Message';
-  INI_DONE_MESSAGE_ON = 'MessageEnabled';
-  INI_DONE_TRAY_MESSAGE = 'TrayMessage';
-  INI_DONE_TRAY_MESSAGE_ON = 'TrayMessageEnabled';
-  INI_DONE_AUDIO = 'AudioFile';
-  INI_DONE_AUDIO_ON = 'AudioFileEnabled';
-  INI_DONE_APP = 'RunApp';
-  INI_DONE_APP_ON = 'RunAppEnabled';
-  INI_SECONDS_MODE = 'SecondsMode';
-  INI_FONT_NAME = 'Name';
-  INI_FONT_CHARSET = 'Charset';
-  INI_FONT_COLOR = 'Color';
-  INI_FONT_SIZE = 'Size';
-  INI_FONT_STYLE = 'Style';
-  INI_BG_COLOR = 'BgColor';
 
   // Menu items
   MENU_FILE      = '&File';
@@ -192,45 +130,17 @@ const
   LBL_MINUTES = '&Minutes:';
   LBL_SECONDS = '&Seconds:';
 
-  // Default values
-  DEF_TIME      = 15;
-  DEF_DONE_MSG  = 'Time''s up';
-  DEF_DONE_MSG_ON = True;
-  DEF_DONE_TRAY_MSG = 'Countdown completed';
-  DEF_DONE_TRAY_MSG_ON = False;
-  DEF_DONE_AUDIO = '.\sounds\alarm_clock_bell.wav';
-  DEF_DONE_AUDIO_ON = False;
-  DEF_DONE_APP  = '';
-  DEF_DONE_APP_ON = False;
-  DEF_ALWAYS_ON_TOP = False;
-  DEF_MIN_TO_TRAY = False;
-  DEF_AUTOSTART = False;
-  DEF_HIDESECONDS = False;
-  DEF_CLICKTIME = True;
-  DEF_DBLCLICKTIME = True;
-  DEF_AUTORESTART = False;
-  DEF_LOOP_AUDIO = False;
-  DEF_TICKING_ON = False;
-  DEF_TICKING_PATH = '.\sounds\ticking\ticking.wav';
-  DEF_AUTOSAVE  = True;
-  DEF_SECONDS_MODE = False;
-  DEF_POSITION  = Ord(Center);
-  DEF_HEIGHT    = 149;
-  DEF_WIDTH     = 214;
-  DEF_FONT_NAME = 'Arial';
-  DEF_FONT_CHARSET = 0;
-  DEF_FONT_COLOR = clNavy;
-  DEF_FONT_SIZE = 38;
-  DEF_FONT_STYLE = 0;
-  DEF_BG_COLOR  = clNone;
-
   // Messages
   MSG_OPEN_INI  = 'An error occurred opening the .ini file, settings won''t be saved';
   MSG_WRITE_INI =
     'An error occurred trying to write to the .ini file, settings won''t be saved.';
 
 procedure TMainForm.OnCreateForm(Sender: TObject);
+var
+  Config: TConfig;
 begin
+  Config:= GetConfig;
+
   MenuFile.Caption    := MENU_FILE;
   MenuToggle.Caption  := BTN_START;
   MenuReset.Caption   := BTN_RESET;
@@ -247,27 +157,7 @@ begin
   TrayMenuExit.Caption   := MENU_EXIT;
 
   // Set all defaults, then load from .ini
-  Minutes.Value := DEF_TIME;
-  AlwaysOnTop := DEF_ALWAYS_ON_TOP;
-  MinToTray   := DEF_MIN_TO_TRAY;
-  AutoStart   := DEF_AUTOSTART;
-  HideSeconds := DEF_HIDESECONDS;
-  ClickTime   := DEF_CLICKTIME;
-  DblClickTime := DEF_DBLCLICKTIME;
-  AutoRestart := DEF_AUTORESTART;
-  LoopAudio   := DEF_LOOP_AUDIO;
-  TickingOn   := DEF_TICKING_ON;
-  AutoSave    := DEF_AUTOSAVE;
-  DoneMessage := DEF_DONE_MSG;
-  DoneMessageEnabled := DEF_DONE_MSG_ON;
-  DoneTrayMsg := DEF_DONE_TRAY_MSG;
-  DoneTrayMsgEnabled := DEF_DONE_TRAY_MSG_ON;
-  DoneAudio   := DEF_DONE_AUDIO;
-  DoneAudioEnabled := DEF_DONE_AUDIO_ON;
-  DoneApp     := DEF_DONE_APP;
-  DoneAppEnabled := DEF_DONE_APP_ON;
-  SecondsMode := DEF_SECONDS_MODE;
-  WndPosition := TPosition(DEF_POSITION);
+
 
   WndPositions := TStringList.Create;
   WndPositions.Add('Centered');
@@ -278,15 +168,14 @@ begin
   WndPositions.Add('Bottom right');
 
   Mode := Timer;
-  CompactMode := False;
   AudioPlaying := False;
   Self.DoubleBuffered := True;
   Count.DoubleBuffered := True;
   Timer1.Interval := 150;
   CountdownDone := False;
+  OnShowFormFirstTime:= True;
 
-  AppName := ExtractFileName(Application.ExeName);
-  IniFilename := ExtractFilePath(Application.ExeName) + ChangeFileExt(AppName, '.ini');
+  //AppName := ExtractFileName(Application.ExeName);
 
   // TODO For some reason this isn't working at all
   //WriteLn('checking for options: ' + IntToStr(ParamCount));
@@ -302,70 +191,27 @@ begin
   //  WriteLn('ini option found');
   //end;
   //end;
-  try
-    IniFile := TIniFile.Create(IniFilename);
-    Minutes.Value := IniFile.ReadInteger(INI_SEC_MAIN, INI_MINUTES, DEF_TIME);
-    AlwaysOnTop := IniFile.ReadBool(INI_SEC_MAIN, INI_ALWAYS_ON_TOP, DEF_ALWAYS_ON_TOP);
-    MinToTray := IniFile.ReadBool(INI_SEC_MAIN, INI_MIN_TO_TRAY, DEF_MIN_TO_TRAY);
-    AutoStart := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSTART, DEF_AUTOSTART);
-    HideSeconds := IniFile.ReadBool(INI_SEC_MAIN, INI_HIDESECONDS, DEF_HIDESECONDS);
-    ClickTime := IniFile.ReadBool(INI_SEC_MAIN, INI_CLICKTIME, DEF_CLICKTIME);
-    DblClickTime := IniFile.ReadBool(INI_SEC_MAIN, INI_DBLCLICKTIME, DEF_DBLCLICKTIME);
-    AutoRestart := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTORESTART, DEF_AUTORESTART);
-    LoopAudio := IniFile.ReadBool(INI_SEC_MAIN, INI_LOOP_AUDIO, DEF_LOOP_AUDIO);
-    TickingOn := IniFile.ReadBool(INI_SEC_MAIN, INI_TICKING_ON, DEF_TICKING_ON);
-    AutoSave := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSAVE, DEF_AUTOSAVE);
-    SecondsMode := IniFile.ReadBool(INI_SEC_MAIN, INI_SECONDS_MODE, DEF_SECONDS_MODE);
-    DoneMessage := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_MESSAGE, DEF_DONE_MSG);
-    DoneMessageEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_MESSAGE_ON,
-      DEF_DONE_MSG_ON);
-    DoneTrayMsg := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_TRAY_MESSAGE,
-      DEF_DONE_TRAY_MSG);
-    DoneTrayMsgEnabled := IniFile.ReadBool(INI_SEC_ALARMS,
-      INI_DONE_TRAY_MESSAGE_ON, DEF_DONE_TRAY_MSG_ON);
-    DoneAudio := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_AUDIO, DEF_DONE_AUDIO);
-    DoneAudioEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_AUDIO_ON,
-      DEF_DONE_AUDIO_ON);
-    DoneApp := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_APP, DEF_DONE_APP);
-    DoneAppEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_APP_ON, DEF_DONE_APP_ON);
-    WndHeight := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_HEIGHT, DEF_HEIGHT);
-    WndWidth := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_WIDTH, DEF_WIDTH);
-    WndPosition := TPosition(IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_POSITION, DEF_POSITION));
-    WndLeft := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_LEFT, 0);
-    WndTop := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_TOP, 0);
 
-    Count.Font.Quality := fqAntialiased;
-    Count.Font.Name := IniFile.ReadString(INI_SEC_FONTS, INI_FONT_NAME,
-      DEF_FONT_NAME);
-    Count.Font.CharSet := IniFile.ReadInteger(INI_SEC_FONTS, INI_FONT_CHARSET,
-      DEF_FONT_CHARSET);
-    Count.Font.Color := IniFile.ReadInteger(INI_SEC_FONTS, INI_FONT_COLOR,
-      DEF_FONT_COLOR);
-    Count.Font.Size := IniFile.ReadInteger(INI_SEC_FONTS, INI_FONT_SIZE,
-      DEF_FONT_SIZE);
-    Count.Font.Style := IntToFontStyles(IniFile.ReadInteger(INI_SEC_FONTS,
-      INI_FONT_STYLE, DEF_FONT_STYLE));
-    Count.Color := IniFile.ReadInteger(INI_SEC_FONTS, INI_BG_COLOR, DEF_BG_COLOR);
-
-  except
+  if Config.Load = False then
+  begin
+    // When will this code execute?
     MessageDlg(MSG_OPEN_INI, mtError, [mbOK], 0);
+    Exit;
   end;
-  if Assigned(IniFile) then
-    IniFile.Free;
 
   // Use minutes argument if it's the only parameter and it's numeric
   if (ParamCount = 1) and (IsInteger(ParamStr(1))) then
     Minutes.Value := StrToInt(ParamStr(1));
 
-  UpdateTimeCaption(SecondsMode);
+  //UpdateTimeCaption(SecondsMode); ApplyConfig will do this
   ResetCountdown(Sender);
-  if AutoStart then
+  if Config.AutoStart then
     ToggleCountdown(Sender);
 end;
 
 procedure TMainForm.ResetCountdown(Sender: TObject);
 begin
-  if (Sender.ClassName = Count.ClassName) and (not DblClickTime) then
+  if (Sender.ClassName = Count.ClassName) and (not GetConfig.DblClickTime) then
     Exit;
   // Turn off both looping audio and ticking
   StopAudio();
@@ -393,13 +239,13 @@ begin
   TrayMenuToggle.Caption := BTN_PAUSE;
   TrayIconMain.Icon  := ImgIconRunning.Picture.Icon;
 
-  if TickingOn then
+  if GetConfig.TickingOn then
     PlayTicking();
 end;
 
 procedure TMainForm.SetTimer();
 begin
-  if SecondsMode then
+  if GetConfig.SecondsMode then
     Timer1.Tag := Minutes.Value
   else
     Timer1.Tag := Minutes.Value * 60;
@@ -407,36 +253,40 @@ begin
 end;
 
 procedure TMainForm.ShowOptions(Sender: TObject);
+var
+  Config: TConfig;
 begin
+  Config:= GetConfig;
+  // TODO move this to TOptionsForm
   OptionsForm := TOptionsForm.Create(Self);
   with OptionsForm do
   begin
-    NotifyMsg.Text      := DoneMessage;
-    NotifyMsgOn.Checked := DoneMessageEnabled;
+    NotifyMsg.Text:= Config.DoneMessage;
+    NotifyMsgOn.Checked:= Config.DoneMessageEnabled;
 
-    NotifyTrayMsg.Text      := DoneTrayMsg;
-    NotifyTrayMsgOn.Checked := DoneTrayMsgEnabled;
+    NotifyTrayMsg.Text:= Config.DoneTrayMsg;
+    NotifyTrayMsgOn.Checked:= Config.DoneTrayMsgEnabled;
 
-    NotifyAudio.Text      := DoneAudio;
-    NotifyAudioOn.Checked := DoneAudioEnabled;
+    NotifyAudio.Text:= Config.DoneAudio;
+    NotifyAudioOn.Checked:= Config.DoneAudioEnabled;
 
-    NotifyRunApp.Text      := DoneApp;
-    NotifyRunAppOn.Checked := DoneAppEnabled;
+    NotifyRunApp.Text:= Config.DoneApp;
+    NotifyRunAppOn.Checked:= Config.DoneAppEnabled;
 
-    CheckAlwaysOnTop.Checked  := AlwaysOnTop;
-    CheckMinToTray.Checked    := MinToTray;
-    CheckAutostart.Checked    := AutoStart;
-    CheckHideSeconds.Checked  := HideSeconds;
-    CheckClicktime.Checked    := ClickTime;
-    CheckDblClickTime.Checked := DblClickTime;
-    CheckAutoRestart.Checked  := AutoRestart;
-    CheckLoopAudio.Checked    := LoopAudio;
-    CheckTicking.Checked      := TickingOn;
-    CheckAutoSave.Checked     := AutoSave;
-    CheckSecondsMode.Checked  := SecondsMode;
+    CheckAlwaysOnTop.Checked:= Config.AlwaysOnTop;
+    CheckMinToTray.Checked:= Config.MinToTray;
+    CheckAutostart.Checked:= Config.AutoStart;
+    CheckHideSeconds.Checked:= Config.HideSeconds;
+    CheckClicktime.Checked:= Config.ClickTime;
+    CheckDblClickTime.Checked:= Config.DblClickTime;
+    CheckAutoRestart.Checked:= Config.AutoRestart;
+    CheckLoopAudio.Checked:= Config.LoopAudio;
+    CheckTicking.Checked:= Config.TickingOn;
+    CheckAutoSave.Checked:= Config.AutoSave;
+    CheckSecondsMode.Checked:= Config.SecondsMode;
 
     PositionCombo.Items     := WndPositions;
-    PositionCombo.ItemIndex := Ord(WndPosition);
+    PositionCombo.ItemIndex := Ord(Config.WndPosition);
 
     PageControl1.TabIndex := 0;
 
@@ -451,28 +301,29 @@ begin
 
     if ShowModal = mrOk then
     begin
-      UpdateTimeCaption(CheckSecondsMode.Checked);
+      // replace with ApplyConig(False)
+      //UpdateTimeCaption(CheckSecondsMode.Checked);
 
-      DoneMessage  := NotifyMsg.Text;
-      DoneMessageEnabled := NotifyMsgOn.Checked;
-      DoneTrayMsg  := NotifyTrayMsg.Text;
-      DoneTrayMsgEnabled := NotifyTrayMsgOn.Checked;
-      DoneAudio    := NotifyAudio.Text;
-      DoneAudioEnabled := NotifyAudioOn.Checked;
-      DoneApp      := NotifyRunApp.Text;
-      DoneAppEnabled := NotifyRunAppOn.Checked;
-      AlwaysOnTop  := CheckAlwaysOnTop.Checked;
-      MinToTray    := CheckMinToTray.Checked;
-      AutoStart    := CheckAutostart.Checked;
-      HideSeconds  := CheckHideSeconds.Checked;
-      ClickTime    := CheckClicktime.Checked;
-      DblClickTime := CheckDblClickTime.Checked;
-      AutoRestart  := CheckAutoRestart.Checked;
-      LoopAudio    := CheckLoopAudio.Checked;
-      TickingOn    := CheckTicking.Checked;
-      AutoSave     := CheckAutoSave.Checked;
-      SecondsMode  := CheckSecondsMode.Checked;
-      WndPosition  := TPosition(PositionCombo.ItemIndex);
+      Config.DoneMessage:= NotifyMsg.Text;
+      Config.DoneMessageEnabled:= NotifyMsgOn.Checked;
+      Config.DoneTrayMsg:= NotifyTrayMsg.Text;
+      Config.DoneTrayMsgEnabled:= NotifyTrayMsgOn.Checked;
+      Config.DoneAudio:= NotifyAudio.Text;
+      Config.DoneAudioEnabled:= NotifyAudioOn.Checked;
+      Config.DoneApp:= NotifyRunApp.Text;
+      Config.DoneAppEnabled:= NotifyRunAppOn.Checked;
+      Config.AlwaysOnTop:= CheckAlwaysOnTop.Checked;
+      Config.MinToTray:= CheckMinToTray.Checked;
+      Config.AutoStart:= CheckAutostart.Checked;
+      Config.HideSeconds:= CheckHideSeconds.Checked;
+      Config.ClickTime:= CheckClicktime.Checked;
+      Config.DblClickTime:= CheckDblClickTime.Checked;
+      Config.AutoRestart:= CheckAutoRestart.Checked;
+      Config.LoopAudio:= CheckLoopAudio.Checked;
+      Config.TickingOn:= CheckTicking.Checked;
+      Config.AutoSave:= CheckAutoSave.Checked;
+      Config.SecondsMode:= CheckSecondsMode.Checked;
+      Config.WndPosition:= TPosition(PositionCombo.ItemIndex);
       //if not (Count.Font.Size = f.Size) then
       //begin
       	//FontSizeChanged := True;
@@ -491,17 +342,17 @@ begin
 
       //if FontSizeChanged then OnShowForm(Sender);
 
-      UpdateAlwaysOnTop(AlwaysOnTop);
+      //UpdateAlwaysOnTop(AlwaysOnTop);
 
       if Timer1.Enabled then
       begin
-        if TickingOn then
+        if Config.TickingOn then
           PlayTicking
         else
           StopAudio();
       end;
 
-      if AutoSave then
+      if Config.AutoSave then
         SaveSettings(Sender);
       // TODO Resize the window if necessary to accomodate larger text
       // Get the text size from the font for '00:00:00'?
@@ -513,7 +364,7 @@ end;
 
 procedure TMainForm.ToggleCountdown(Sender: TObject);
 begin
-  if (Sender.ClassName = Count.ClassName) and (not ClickTime) then
+  if (Sender.ClassName = Count.ClassName) and (not GetConfig.ClickTime) then
     Exit;
 
   if Minutes.Value = 0 then
@@ -547,7 +398,9 @@ begin
 end;
 
 procedure TMainForm.Countdown(Sender: TObject);
+var Config: TConfig;
 begin
+  Config:= GetConfig;
   if MODE = Stopwatch then
   begin
     Timer1.Tag := SecondsBetween(StartTime, Now);
@@ -562,16 +415,16 @@ begin
       DisableTimer();
       CountdownDone := True;
       Application.Title := APP_NAME;
-      if DoneAudioEnabled then
-        PlayAudio(DoneAudio, LoopAudio);
-      if DoneAppEnabled then
-        RunApp(DoneApp);
-      if DoneTrayMsgEnabled then
-        ShowTrayMessage(DoneTrayMsg);
-      if DoneMessageEnabled then
-        ShowDoneMessage(DoneMessage);
+      if Config.DoneAudioEnabled then
+        PlayAudio(Config.DoneAudio, Config.LoopAudio);
+      if Config.DoneAppEnabled then
+        RunApp(Config.DoneApp);
+      if Config.DoneTrayMsgEnabled then
+        ShowTrayMessage(Config.DoneTrayMsg);
+      if Config.DoneMessageEnabled then
+        ShowDoneMessage(Config.DoneMessage);
 
-      if AutoRestart then
+      if Config.AutoRestart then
         ToggleCountdown(Sender)
       else
         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
@@ -593,36 +446,16 @@ end;
 
 procedure TMainForm.OnDestroyForm(Sender: TObject);
 begin
-  if AutoSave then
+  if GetConfig.AutoSave then
     SaveSettings(Sender);
 end;
 
 procedure TMainForm.OnShowForm(Sender: TObject);
-var
-  //w: integer;
-  //h: integer;
-  wRect: TRect;
-  //cRect: TRect;
-  flags: integer;
-
 begin
-  Self.Position := poDesigned;
-  WndHandle := GetHandle();
-  GetWindowRect(WndHandle, wRect);
-  flags := SWP_SHOWWINDOW;
-
-  case WndPosition of
-       Remember: SetWindowPos(WndHandle, HWND_TOP, WndLeft, WndTop, WndWidth, WndHeight, flags);
-       TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, flags);
-       TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - WndWidth, 0, WndWidth, WndHeight, flags);
-       BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - WndHeight, WndWidth, WndHeight, flags);
-       BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - WndWidth,
-                    Monitor.WorkareaRect.Bottom - WndHeight, WndWidth, WndHeight, flags);
-       Center:
-         begin
-              SetWindowPos(WndHandle, HWND_TOP, 0, 0, WndWidth, WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
-              Self.Position := poScreenCenter;
-         end;
+  if OnShowFormFirstTime then
+  begin
+    OnShowFormFirstTime:= False;
+    ApplyConfig(True);
   end;
 
   // TODO Get this working for window size (getpreferred size gets form, not window)
@@ -662,56 +495,23 @@ begin
     //exit;
   end;
 
-  UpdateAlwaysOnTop(AlwaysOnTop);
+  //UpdateAlwaysOnTop(AlwaysOnTop);
 end;
 
 procedure TMainForm.SaveSettings(Sender: TObject);
 var
+  Config: TConfig;
   wRect: TRect;
 begin
-  try
-    IniFile := TIniFile.Create(IniFilename);
-    IniFile.CacheUpdates := True;
-    IniFile.WriteInteger(INI_SEC_MAIN, INI_MINUTES, Minutes.Value);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_ALWAYS_ON_TOP, AlwaysOnTop);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_MIN_TO_TRAY, MinToTray);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSTART, AutoStart);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_HIDESECONDS, HideSeconds);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_CLICKTIME, ClickTime);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_DBLCLICKTIME, DblClickTime);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_AUTORESTART, AutoRestart);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_LOOP_AUDIO, LoopAudio);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_TICKING_ON, TickingOn);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSAVE, AutoSave);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_SECONDS_MODE, SecondsMode);
+  Config:= GetConfig;
+  GetWindowRect(self.Handle, wRect);
+  Config.WndWidth:= wRect.Right - wRect.Left;
+  Config.WndHeight:= wRect.Bottom - wRect.Top;
+  Config.WndLeft:= wRect.Left;
+  Config.WndTop:= wRect.Top;
 
-    GetWindowRect(GetHandle(), wRect);
-
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_HEIGHT, wRect.Bottom - wRect.Top);
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_WIDTH, wRect.Right - wRect.Left);
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_LEFT, wRect.Left);
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_TOP, wRect.Top);
-    IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_POSITION, Ord(WndPosition));
-
-    IniFile.WriteString(INI_SEC_ALARMS, INI_DONE_MESSAGE, DoneMessage);
-    IniFile.WriteBool(INI_SEC_ALARMS, INI_DONE_MESSAGE_ON, DoneMessageEnabled);
-    IniFile.WriteString(INI_SEC_ALARMS, INI_DONE_TRAY_MESSAGE, DoneTrayMsg);
-    IniFile.WriteBool(INI_SEC_ALARMS, INI_DONE_TRAY_MESSAGE_ON, DoneTrayMsgEnabled);
-    IniFile.WriteString(INI_SEC_ALARMS, INI_DONE_AUDIO, DoneAudio);
-    IniFile.WriteBool(INI_SEC_ALARMS, INI_DONE_AUDIO_ON, DoneAudioEnabled);
-    IniFile.WriteString(INI_SEC_ALARMS, INI_DONE_APP, DoneApp);
-    IniFile.WriteBool(INI_SEC_ALARMS, INI_DONE_APP_ON, DoneAppEnabled);
-
-    IniFile.WriteString(INI_SEC_FONTS, INI_FONT_NAME, Count.Font.Name);
-    IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_CHARSET, Count.Font.CharSet);
-    IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_COLOR, Count.Font.Color);
-    IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_SIZE, Count.Font.Size);
-    IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_STYLE, FontStylesToInt(Count.Font));
-    IniFile.WriteInteger(INI_SEC_FONTS, INI_BG_COLOR, Count.Color);
-    IniFile.UpdateFile;
-  except
+  if Config.Save = False then
     MessageDlg(MSG_WRITE_INI, mtError, [mbOK], 0);
-  end;
 end;
 
 procedure TMainForm.MinutesChanged(Sender: TObject);
@@ -722,8 +522,9 @@ end;
 
 procedure TMainForm.ToggleCompact(Sender: TObject);
 begin
-  SetFieldsVisible(CompactMode);
-  CompactMode := not CompactMode;
+  // todo
+//  SetFieldsVisible(GetConfig.CompactMode);
+//  CompactMode := not CompactMode;
 end;
 
  // TODO Figure out how to remove the fields from the form so they don't
@@ -760,7 +561,7 @@ begin
   h      := Seconds div 3600;
   m      := Seconds div 60 - h * 60;
   s      := Seconds - (h * 3600 + m * 60);
-  if HideSeconds then
+  if GetConfig.HideSeconds then
   begin
     Result := SysUtils.Format('%.2d:%.2d', [h, m]);
   end
@@ -803,7 +604,7 @@ end;
 
 procedure TMainForm.FormWindowStateChange(Sender: TObject);
 begin
-  if not MinToTray then
+  if not GetConfig.MinToTray then
     Exit;
 
   if WindowState = wsMinimized then
@@ -845,7 +646,8 @@ end;
 
 procedure TMainForm.PlayTicking();
 begin
-  sndPlaySound(PChar(GetFilePath(DEF_TICKING_PATH)), SND_NODEFAULT or
+  // TODO replace hard-coded path with Config
+  sndPlaySound(PChar(GetFilePath('.\sounds\ticking\ticking.wav')), SND_NODEFAULT or
     SND_ASYNC or SND_LOOP);
 end;
 
@@ -867,60 +669,15 @@ end;
 procedure TMainForm.ShowDoneMessage(Msg: string);
 begin
   // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
-  Windows.MessageBox(GetHandle(), pChar(msg), 'Done',
+  Windows.MessageBox(self.Handle, pChar(msg), 'Done',
      MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
   StopAudio();
 end;
 
-function TMainForm.GetHandle(): HWND;
+{function TMainForm.GetHandle(): HWND;
 begin
   Result := Application.MainForm.Handle;
-end;
-
-procedure TMainForm.SetDefaults(Sender: TObject);
-begin
-  with Sender as TOptionsForm do
-    BgColor.ButtonColor := DEF_BG_COLOR;
-  f.Name    := DEF_FONT_NAME;
-  f.Color   := DEF_FONT_COLOR;
-  f.CharSet := DEF_FONT_CHARSET;
-  f.Size    := DEF_FONT_SIZE;
-  f.Style   := IntToFontStyles(DEF_FONT_STYLE);
-end;
-
-function TMainForm.FontStylesToInt(Fnt: TFont): integer;
-var
-  Mask:  integer;
-  Style: TFontStyle;
-begin
-  // Translate the set into a bit mask
-  Mask := 0;
-  for Style := Low(TFontStyle) to High(TFontStyle) do
-    if Style in Fnt.Style then
-      Mask := Mask or (1 shl Ord(Style));
-  Result   := Mask;
-end;
-
-function TMainForm.IntToFontStyles(Mask: integer): TFontStyles;
-var
-  i: integer;
-  StyleSet: TFontStyles;
-begin
-  // Translate the bit mask into a set
-  StyleSet := [];
-  for i := 0 to Ord(High(TFontStyle)) do
-    if Mask and (1 shl i) <> 0 then
-      StyleSet := StyleSet + [TFontStyle(i)];
-  Result := StyleSet;
-end;
-
-procedure TMainForm.UpdateAlwaysOnTop(onTop: boolean);
-begin
-  if onTop then
-     FormStyle:= fsSystemStayOnTop
-  else
-     FormStyle:= fsNormal
-end;
+end;}
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
@@ -942,7 +699,7 @@ end;
 // TODO Only update the time if this value changed (otherwise it resets
 // the time every time you modify settings)
 // It's not working - test it thoroughly and fix it.
-procedure TMainForm.UpdateTimeCaption(newSecondsMode: boolean);
+{procedure TMainForm.UpdateTimeCaption(newSecondsMode: boolean);
 begin
   if newSecondsMode <> SecondsMode then
   begin
@@ -953,6 +710,55 @@ begin
     SetTimer();
   end;
 
+end;      }
+
+
+procedure TMainForm.ApplyConfig(APosition: Boolean);
+var
+  wRect: TRect;
+  flags: Integer;
+  Config: TConfig;
+begin
+  Config:= GetConfig;
+  if Config.AlwaysOnTop then
+     FormStyle:= fsSystemStayOnTop
+  else
+      FormStyle:= fsNormal;
+
+  if Config.SecondsMode then
+     TimeLabel.Caption := LBL_SECONDS
+  else
+      TimeLabel.Caption := LBL_MINUTES;
+
+  Count.Font.Quality := fqAntialiased;
+  Count.Font.Name := Config.Font.Name;
+  Count.Font.CharSet := Config.Font.Charset;
+  Count.Font.Color := Config.Font.Color;
+  Count.Font.Size := Config.Font.Size;
+  Count.Font.Style := Config.Font.Style;
+  Count.Color := Config.Font.BgColor;
+
+  if APosition then
+  begin
+    Self.Position := poDesigned;
+    WndHandle := self.Handle;
+    GetWindowRect(WndHandle, wRect);
+    flags := SWP_SHOWWINDOW;
+
+    case Config.WndPosition of
+         Remember: SetWindowPos(WndHandle, HWND_TOP, Config.WndLeft, Config.WndTop, Config.WndWidth, Config.WndHeight, flags);
+         TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, flags);
+         TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth, 0, Config.WndWidth, Config.WndHeight, flags);
+         BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
+         BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth,
+                      Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
+         Center:
+           begin
+                SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
+                Self.Position := poScreenCenter;
+           end;
+    end;
+  end;
 end;
 
 initialization

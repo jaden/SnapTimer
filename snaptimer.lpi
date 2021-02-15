@@ -26,7 +26,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="ui"/>
+            <OtherUnitFiles Value="ui;model"/>
             <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
           </SearchPaths>
           <Parsing>
@@ -64,6 +64,9 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
@@ -82,7 +85,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -101,15 +104,24 @@
       <Unit3>
         <Filename Value="ui\mainform1.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainForm1"/>
       </Unit3>
       <Unit4>
         <Filename Value="ui\options.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
         <HasResources Value="True"/>
-        <UnitName Value="settings"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Options"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="model\config.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Config"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -120,7 +132,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="ui"/>
+      <OtherUnitFiles Value="ui;model"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

@@ -5,7 +5,7 @@ unit Options;
 interface
 
 uses
-  SysUtils, LResources, Forms, Graphics, Dialogs, StdCtrls, ComCtrls, Spin;
+  SysUtils, LResources, Forms, Graphics, Dialogs, StdCtrls, ComCtrls, Spin, Classes;
 
 type
 
@@ -62,7 +62,7 @@ type
     procedure GetAppFile(Sender: TObject);
     function GetFile(Orig: String; FilterStr: String; Dir : String): String;
     procedure EnableFields(Sender: TObject);
-    procedure SetDefaults(Sender: TObject);
+    procedure SetFontDefaults(Sender: TObject);
     procedure TestAudio(Sender: TObject);
     procedure TestMessage(Sender: TObject);
     procedure TestRunApp(Sender: TObject);
@@ -71,17 +71,17 @@ type
     procedure UpdateFonts(Sender: TObject);
     procedure UpdateFontSize(Sender: TObject);
   private
-    { private declarations }
   public
     { public declarations }
   end; 
 
 var
   OptionsForm: TOptionsForm;
-  f: TFont;
+  f: TFont; // TODO make private
 
 implementation
-uses MainForm1;
+
+uses MainForm1, Config;
 { TOptionsForm }
 
 // TODO Move all text strings to the top
@@ -98,9 +98,9 @@ end;
 
 procedure TOptionsForm.ChooseFont(Sender: TObject);
 var
-	dlg : TFontDialog;
+  dlg : TFontDialog;
 begin
-	dlg := TFontDialog.Create(nil);
+  dlg := TFontDialog.Create(nil);
   dlg.Font := f;
 
   if dlg.Execute then
@@ -117,6 +117,7 @@ begin
   end;
   dlg.Free;
 end;
+
 
 procedure TOptionsForm.UpdateFonts(Sender: TObject);
 begin
@@ -159,9 +160,10 @@ var
 begin
   dlg := TOpenDialog.Create(nil);
   dlg.FileName := '';
-  if DirectoryExists(Dir)
-  then dlg.InitialDir := Dir
-  else dlg.InitialDir := GetCurrentDir;
+  if DirectoryExists(Dir) then
+     dlg.InitialDir := Dir
+  else
+    dlg.InitialDir := GetCurrentDir;
   dlg.Options := [ofFileMustExist];
   dlg.Filter := FilterStr;
   dlg.FilterIndex := 1;
@@ -180,7 +182,7 @@ end;
 
 procedure TOptionsForm.EnableFields(Sender: TObject);
 begin
-	NotifyMsg.Enabled := NotifyMsgOn.Checked;
+  NotifyMsg.Enabled := NotifyMsgOn.Checked;
   NotifyMsgTest.Enabled := NotifyMsgOn.Checked;
   NotifyTrayMsg.Enabled := NotifyTrayMsgOn.Checked;
   NotifyTrayMsgTest.Enabled := NotifyTrayMsgOn.Checked;
@@ -194,9 +196,18 @@ begin
   NotifyRunTest.Enabled := NotifyRunAppOn.Checked;
 end;
 
-procedure TOptionsForm.SetDefaults(Sender: TObject);
+
+procedure TOptionsForm.SetFontDefaults(Sender: TObject);
+var
+  Cfg : TFontConfig;
 begin
-  (Self.Owner as TMainForm).SetDefaults(Self);
+  Cfg:= GetConfig.GetDefaultFont;
+  BgColor.ButtonColor:= Cfg.BgColor;
+  f.Name:= Cfg.Name;
+  f.Color:= Cfg.Color;
+  f.CharSet:= Cfg.Charset;
+  f.Size:= Cfg.Size;
+  f.Style:= Cfg.Style;
   UpdateFonts(Sender);
 end;
 

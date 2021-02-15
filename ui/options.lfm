@@ -465,7 +465,7 @@ object OptionsForm: TOptionsForm
         Top = 201
         Width = 112
         Caption = '&Defaults'
-        OnClick = SetDefaults
+        OnClick = SetFontDefaults
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
