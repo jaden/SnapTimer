@@ -74,16 +74,12 @@ type
     procedure RunApp(Path: string);
     procedure ShowDoneMessage(Msg: string);
     procedure ShowTrayMessage(Msg: string);
-    //f GetHandle(): HWND;
     procedure SetFieldsVisible(showFields: boolean);
     procedure PlayTicking();
     function IsInteger(S: String): boolean;
-    //procedure UpdateTimeCaption(newSecondsMode: boolean);
   private
     { private declarations }
     AudioPlaying: boolean;
-    WndHandle: HWND;
-    WndPositions: TStrings;
     Mode: TMode;
     FontSizeChanged : boolean;
     //FormerWidth : integer;
@@ -92,7 +88,7 @@ type
     StartTime: TDateTime;
     CountdownDone: boolean;
     OnShowFormFirstTime: Boolean;
-    procedure ApplyConfig(APosition: Boolean);
+    procedure ApplyConfig;
   public
     { public declarations }
   end;
@@ -158,15 +154,6 @@ begin
 
   // Set all defaults, then load from .ini
 
-
-  WndPositions := TStringList.Create;
-  WndPositions.Add('Centered');
-  WndPositions.Add('Remember position');
-  WndPositions.Add('Top left');
-  WndPositions.Add('Top right');
-  WndPositions.Add('Bottom left');
-  WndPositions.Add('Bottom right');
-
   Mode := Timer;
   AudioPlaying := False;
   Self.DoubleBuffered := True;
@@ -198,6 +185,7 @@ begin
     MessageDlg(MSG_OPEN_INI, mtError, [mbOK], 0);
     Exit;
   end;
+  Minutes.Value:= Config.Minutes;
 
   // Use minutes argument if it's the only parameter and it's numeric
   if (ParamCount = 1) and (IsInteger(ParamStr(1))) then
@@ -255,111 +243,47 @@ end;
 procedure TMainForm.ShowOptions(Sender: TObject);
 var
   Config: TConfig;
+  Ok: Boolean;
+  r: TRect;
 begin
-  Config:= GetConfig;
-  // TODO move this to TOptionsForm
   OptionsForm := TOptionsForm.Create(Self);
-  with OptionsForm do
-  begin
-    NotifyMsg.Text:= Config.DoneMessage;
-    NotifyMsgOn.Checked:= Config.DoneMessageEnabled;
-
-    NotifyTrayMsg.Text:= Config.DoneTrayMsg;
-    NotifyTrayMsgOn.Checked:= Config.DoneTrayMsgEnabled;
-
-    NotifyAudio.Text:= Config.DoneAudio;
-    NotifyAudioOn.Checked:= Config.DoneAudioEnabled;
-
-    NotifyRunApp.Text:= Config.DoneApp;
-    NotifyRunAppOn.Checked:= Config.DoneAppEnabled;
-
-    CheckAlwaysOnTop.Checked:= Config.AlwaysOnTop;
-    CheckMinToTray.Checked:= Config.MinToTray;
-    CheckAutostart.Checked:= Config.AutoStart;
-    CheckHideSeconds.Checked:= Config.HideSeconds;
-    CheckClicktime.Checked:= Config.ClickTime;
-    CheckDblClickTime.Checked:= Config.DblClickTime;
-    CheckAutoRestart.Checked:= Config.AutoRestart;
-    CheckLoopAudio.Checked:= Config.LoopAudio;
-    CheckTicking.Checked:= Config.TickingOn;
-    CheckAutoSave.Checked:= Config.AutoSave;
-    CheckSecondsMode.Checked:= Config.SecondsMode;
-
-    PositionCombo.Items     := WndPositions;
-    PositionCombo.ItemIndex := Ord(Config.WndPosition);
-
-    PageControl1.TabIndex := 0;
-
-    f      := TFont.Create;
-    f.Name := Count.Font.Name;
-    f.Size := Count.Font.Size;
-    f.CharSet := Count.Font.CharSet;
-    f.Color := Count.Font.Color;
-    f.Style := Count.Font.Style;
-    BgColor.ButtonColor := Count.Color;
-    FontSizeChanged := False;
-
-    if ShowModal = mrOk then
-    begin
-      // replace with ApplyConig(False)
-      //UpdateTimeCaption(CheckSecondsMode.Checked);
-
-      Config.DoneMessage:= NotifyMsg.Text;
-      Config.DoneMessageEnabled:= NotifyMsgOn.Checked;
-      Config.DoneTrayMsg:= NotifyTrayMsg.Text;
-      Config.DoneTrayMsgEnabled:= NotifyTrayMsgOn.Checked;
-      Config.DoneAudio:= NotifyAudio.Text;
-      Config.DoneAudioEnabled:= NotifyAudioOn.Checked;
-      Config.DoneApp:= NotifyRunApp.Text;
-      Config.DoneAppEnabled:= NotifyRunAppOn.Checked;
-      Config.AlwaysOnTop:= CheckAlwaysOnTop.Checked;
-      Config.MinToTray:= CheckMinToTray.Checked;
-      Config.AutoStart:= CheckAutostart.Checked;
-      Config.HideSeconds:= CheckHideSeconds.Checked;
-      Config.ClickTime:= CheckClicktime.Checked;
-      Config.DblClickTime:= CheckDblClickTime.Checked;
-      Config.AutoRestart:= CheckAutoRestart.Checked;
-      Config.LoopAudio:= CheckLoopAudio.Checked;
-      Config.TickingOn:= CheckTicking.Checked;
-      Config.AutoSave:= CheckAutoSave.Checked;
-      Config.SecondsMode:= CheckSecondsMode.Checked;
-      Config.WndPosition:= TPosition(PositionCombo.ItemIndex);
-      //if not (Count.Font.Size = f.Size) then
-      //begin
-      	//FontSizeChanged := True;
-        //GetPreferredSize(FormerWidth, FormerHeight, True);
-        //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
-      //end;
-      //Count.Font  := f;
-      // TODO Get font colors and background color to be shown - what's up?
-      Count.Font.Name := f.Name;
-      Count.Font.Size := f.Size;
-      Count.Font.CharSet := f.CharSet;
-      Count.Font.Color := f.Color;
-      Count.Font.Style := f.Style;
-      Count.Font.Quality := fqAntialiased;
-      Count.Color := BgColor.ButtonColor;
-
-      //if FontSizeChanged then OnShowForm(Sender);
-
-      //UpdateAlwaysOnTop(AlwaysOnTop);
-
-      if Timer1.Enabled then
-      begin
-        if Config.TickingOn then
-          PlayTicking
-        else
-          StopAudio();
-      end;
-
-      if Config.AutoSave then
-        SaveSettings(Sender);
-      // TODO Resize the window if necessary to accomodate larger text
-      // Get the text size from the font for '00:00:00'?
-
-    end;
-  end;
+  Ok:= OptionsForm.ShowModal = mrOk;
   OptionsForm.Free;
+
+  if Ok then
+  begin
+    Config:= GetConfig;
+    GetWindowRect(MainForm.Handle, r);
+    Config.WndLeft:= r.Left;
+    Config.WndTop:= r.Top;
+    Config.WndWidth:= r.Right - r. Left;
+    Config.WndHeight:= r.Bottom - r.Top;
+    ApplyConfig;
+
+    //if not (Count.Font.Size = f.Size) then
+    //begin
+      //FontSizeChanged := True;
+      //GetPreferredSize(FormerWidth, FormerHeight, True);
+      //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
+    //end;
+    //Count.Font  := f;
+    // TODO Get font colors and background color to be shown - what's up?
+
+    //if FontSizeChanged then OnShowForm(Sender);
+    if Timer1.Enabled then
+    begin
+      if Config.TickingOn then
+        PlayTicking
+      else
+        StopAudio();
+    end;
+
+    if Config.AutoSave then
+      SaveSettings(Sender);
+    // TODO Resize the window if necessary to accomodate larger text
+    // Get the text size from the font for '00:00:00'?
+
+  end;
 end;
 
 procedure TMainForm.ToggleCountdown(Sender: TObject);
@@ -455,7 +379,7 @@ begin
   if OnShowFormFirstTime then
   begin
     OnShowFormFirstTime:= False;
-    ApplyConfig(True);
+    ApplyConfig;
   end;
 
   // TODO Get this working for window size (getpreferred size gets form, not window)
@@ -504,6 +428,9 @@ var
   wRect: TRect;
 begin
   Config:= GetConfig;
+
+  // These config values are not set in OptionsForm.
+  Config.Minutes:= Minutes.Value;
   GetWindowRect(self.Handle, wRect);
   Config.WndWidth:= wRect.Right - wRect.Left;
   Config.WndHeight:= wRect.Bottom - wRect.Top;
@@ -646,7 +573,6 @@ end;
 
 procedure TMainForm.PlayTicking();
 begin
-  // TODO replace hard-coded path with Config
   sndPlaySound(PChar(GetFilePath('.\sounds\ticking\ticking.wav')), SND_NODEFAULT or
     SND_ASYNC or SND_LOOP);
 end;
@@ -674,11 +600,6 @@ begin
   StopAudio();
 end;
 
-{function TMainForm.GetHandle(): HWND;
-begin
-  Result := Application.MainForm.Handle;
-end;}
-
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   WindowState   := wsNormal;
@@ -696,28 +617,11 @@ begin
   end;
 end;
 
-// TODO Only update the time if this value changed (otherwise it resets
-// the time every time you modify settings)
-// It's not working - test it thoroughly and fix it.
-{procedure TMainForm.UpdateTimeCaption(newSecondsMode: boolean);
-begin
-  if newSecondsMode <> SecondsMode then
-  begin
-    if newSecondsMode then
-      TimeLabel.Caption := LBL_SECONDS
-    else
-      TimeLabel.Caption := LBL_MINUTES;
-    SetTimer();
-  end;
-
-end;      }
-
-
-procedure TMainForm.ApplyConfig(APosition: Boolean);
+procedure TMainForm.ApplyConfig;
 var
-  wRect: TRect;
-  flags: Integer;
   Config: TConfig;
+  WndHandle: HWND;
+  flags: Integer;
 begin
   Config:= GetConfig;
   if Config.AlwaysOnTop then
@@ -738,26 +642,21 @@ begin
   Count.Font.Style := Config.Font.Style;
   Count.Color := Config.Font.BgColor;
 
-  if APosition then
-  begin
-    Self.Position := poDesigned;
-    WndHandle := self.Handle;
-    GetWindowRect(WndHandle, wRect);
-    flags := SWP_SHOWWINDOW;
-
-    case Config.WndPosition of
-         Remember: SetWindowPos(WndHandle, HWND_TOP, Config.WndLeft, Config.WndTop, Config.WndWidth, Config.WndHeight, flags);
-         TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, flags);
-         TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth, 0, Config.WndWidth, Config.WndHeight, flags);
-         BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
-         BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth,
-                      Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
-         Center:
-           begin
-                SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
-                Self.Position := poScreenCenter;
-           end;
-    end;
+  WndHandle:= self.Handle;
+  Self.Position := poDesigned;
+  flags:= SWP_SHOWWINDOW;
+  case Config.WndPosition of
+       Remember: SetWindowPos(WndHandle, HWND_TOP, Config.WndLeft, Config.WndTop, Config.WndWidth, Config.WndHeight, flags);
+       TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, flags);
+       TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth, 0, Config.WndWidth, Config.WndHeight, flags);
+       BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
+       BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth,
+                    Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
+       Center:
+         begin
+              SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
+              Self.Position := poScreenCenter;
+         end;
   end;
 end;
 
