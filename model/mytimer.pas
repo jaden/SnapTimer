@@ -120,9 +120,11 @@ end;
 constructor TMyTimer.Create;
 begin
   FTimer:= TTimer.Create(nil);
+  FTimer.Enabled:= False;
   FTimer.Interval:= 160;
   FTimer.OnTimer:= @OnTimer;
   FMode:= Timer;
+  FState:= Stopped;
 end;
 
 destructor TMyTimer.Free;

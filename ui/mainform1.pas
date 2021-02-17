@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
   Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, MMSystem,
-  Windows, StrUtils, DateUtils, MyTimer;
+  Windows, DateUtils, MyTimer;
 
 type
   TMode = (Timer, Stopwatch);
@@ -64,19 +64,15 @@ type
     procedure ShowOptions(Sender: TObject);
     procedure ToggleCountdown(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
-    function SecondsToTime(Seconds: integer): string;
     procedure FormWindowStateChange(Sender: TObject);
     procedure UpdateTime();
     procedure SaveSettings(Sender: TObject);
-    class function GetFilePath(Path: string): string;
     procedure PlayAudio(Path: string; Loop: boolean);
     procedure StopAudio();
-    procedure RunApp(Path: string);
     procedure ShowDoneMessage(Msg: string);
     procedure ShowTrayMessage(Msg: string);
     procedure SetFieldsVisible(showFields: boolean);
     procedure PlayTicking();
-    function IsInteger(S: String): boolean;
   private
     { private declarations }
     MyTimer : TMyTimer;
@@ -102,7 +98,7 @@ var
 implementation
 
 uses
-  Config;
+  Config, Utils;
 
 { TMainForm }
 
@@ -130,6 +126,7 @@ const
   // Messages
   MSG_OPEN_INI  = 'An error occurred opening the .ini file, settings won''t be saved';
   MSG_WRITE_INI = 'An error occurred trying to write to the .ini file, settings won''t be saved.';
+
 
 procedure TMainForm.OnCreateForm(Sender: TObject);
 var
@@ -187,7 +184,7 @@ begin
   end;
 
   // Use minutes argument if it's the only parameter and it's numeric
-  if (ParamCount = 1) and (IsInteger(ParamStr(1))) then
+  if (ParamCount = 1) and (TUtils.IsInteger(ParamStr(1))) then
     Minutes.Value := StrToInt(ParamStr(1));
 
   //UpdateTimeCaption(SecondsMode); ApplyConfig will do this
@@ -405,7 +402,7 @@ begin
       if Config.DoneAudioEnabled then
         PlayAudio(Config.DoneAudio, Config.LoopAudio);
       if Config.DoneAppEnabled then
-        RunApp(Config.DoneApp);
+        TUtils.RunApp(Config.DoneApp);
       if Config.DoneTrayMsgEnabled then
         ShowTrayMessage(Config.DoneTrayMsg);
       if Config.DoneMessageEnabled then
@@ -497,22 +494,6 @@ begin
   Close;
 end;
 
-function TMainForm.SecondsToTime(Seconds: integer): string;
-var
-  h, m, s: integer;
-begin
-  h      := Seconds div 3600;
-  m      := Seconds div 60 - h * 60;
-  s      := Seconds - (h * 3600 + m * 60);
-  if GetConfig.HideSeconds then
-  begin
-    Result := SysUtils.Format('%.2d:%.2d', [h, m]);
-  end
-  else
-  begin
-    Result := SysUtils.Format('%.2d:%.2d:%.2d', [h, m, s]);
-  end;
-end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
@@ -530,7 +511,7 @@ procedure TMainForm.UpdateTime();
 begin
   // Changing caption while it's not visible keeps time from flashing
   Count.Visible := False;
-  Count.Caption := SecondsToTime(Timer1.Tag);
+  Count.Caption := TUtils.SecondsToTime(Timer1.Tag, GetConfig.HideSeconds);
   Count.Visible := True;
   MenuCount.Caption := Count.Caption;
   if Timer1.Enabled then
@@ -558,15 +539,7 @@ begin
   end;
 end;
 
-// TODO Interpret env vars in the path
-class function TMainForm.GetFilePath(Path: string): string;
-begin
-  if AnsiStartsStr('.', Path) then
-  begin
-    Result := ExtractFilePath(Application.ExeName) + Path;
-  end else
-    Result := Path;
-end;
+
 
 procedure TMainForm.PlayAudio(Path: string; Loop: boolean);
 begin
@@ -575,10 +548,10 @@ begin
   if Loop then
   begin
     AudioPlaying := True;
-    sndPlaySound(PChar(GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC or SND_LOOP);
+    sndPlaySound(PChar(TUtils.GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC or SND_LOOP);
   end
   else
-    sndPlaySound(PChar(GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC);
+    sndPlaySound(PChar(TUtils.GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC);
 end;
 
 procedure TMainForm.StopAudio();
@@ -589,13 +562,8 @@ end;
 
 procedure TMainForm.PlayTicking();
 begin
-  sndPlaySound(PChar(GetFilePath('.\sounds\ticking\ticking.wav')), SND_NODEFAULT or
+  sndPlaySound(PChar(TUtils.GetFilePath('.\sounds\ticking\ticking.wav')), SND_NODEFAULT or
     SND_ASYNC or SND_LOOP);
-end;
-
-procedure TMainForm.RunApp(Path: string);
-begin
-  ShellExecute(0, 'open', PChar(GetFilePath(Path)), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.ShowTrayMessage(Msg: string);
@@ -614,17 +582,6 @@ begin
   Windows.MessageBox(self.Handle, pChar(msg), 'Done',
      MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
   StopAudio();
-end;
-
-
-function TMainForm.IsInteger(S: String): boolean;
-begin
-  try
-    Result := True;
-    StrToInt(S);
-  except on E: EConvertError do
-    Result := False;
-  end;
 end;
 
 procedure TMainForm.ApplyConfig;

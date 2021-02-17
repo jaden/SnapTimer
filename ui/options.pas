@@ -79,11 +79,10 @@ type
 
 var
   OptionsForm: TOptionsForm;
-//  f: TFont; // TODO make private
 
 implementation
 
-uses Controls, MainForm1, Config;
+uses Controls, MainForm1, Config, Utils;
 { TOptionsForm }
 
 const
@@ -325,14 +324,14 @@ end;
 
 procedure TOptionsForm.TestRunApp(Sender: TObject);
 begin
-with Self.Owner as TMainForm do
-  RunApp(NotifyRunApp.Text);
+  with Self.Owner as TMainForm do
+    TUtils.RunApp(NotifyRunApp.Text);
 end;
 
 procedure TOptionsForm.TestTrayMsg(Sender: TObject);
 begin
-with Self.Owner as TMainForm do
-  ShowTrayMessage(NotifyTrayMsg.Text);
+  with Self.Owner as TMainForm do
+    ShowTrayMessage(NotifyTrayMsg.Text);
 end;
 
 initialization

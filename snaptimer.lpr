@@ -3,7 +3,7 @@ program snaptimer;
 {$mode objfpc}{$H+}
 
 uses
-  Forms, Interfaces, MainForm1;
+  Forms, Interfaces, MainForm1, utils;
 
 {$R *.res}
 
