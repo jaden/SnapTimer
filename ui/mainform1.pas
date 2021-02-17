@@ -7,10 +7,10 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
   Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, MMSystem,
-  Windows, StrUtils, DateUtils;
+  Windows, StrUtils, DateUtils, MyTimer;
 
 type
-    TMode = (Timer, Stopwatch);
+  TMode = (Timer, Stopwatch);
 
   { TMainForm }
   TMainForm = class(TForm)
@@ -48,14 +48,14 @@ type
     Count:   TStaticText;
     Timer1:  TTimer;
     TrayIconMain: TTrayIcon;
+    procedure OnCreateForm(Sender: TObject);
+    procedure OnDestroyForm(Sender: TObject);
+    procedure OnShowForm(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure ToggleCompact(Sender: TObject);
     procedure MinutesChanged(Sender: TObject);
-    procedure OnDestroyForm(Sender: TObject);
-    procedure OnShowForm(Sender: TObject);
     procedure ShowAbout(Sender: TObject);
     procedure CloseApp(Sender: TObject);
-    procedure OnCreateForm(Sender: TObject);
     procedure Countdown(Sender: TObject);
     procedure ResetCountdown(Sender: TObject);
     procedure DisableTimer();
@@ -79,6 +79,7 @@ type
     function IsInteger(S: String): boolean;
   private
     { private declarations }
+    MyTimer : TMyTimer;
     AudioPlaying: boolean;
     Mode: TMode;
     FontSizeChanged : boolean;
@@ -128,15 +129,14 @@ const
 
   // Messages
   MSG_OPEN_INI  = 'An error occurred opening the .ini file, settings won''t be saved';
-  MSG_WRITE_INI =
-    'An error occurred trying to write to the .ini file, settings won''t be saved.';
+  MSG_WRITE_INI = 'An error occurred trying to write to the .ini file, settings won''t be saved.';
 
 procedure TMainForm.OnCreateForm(Sender: TObject);
 var
   Config: TConfig;
 begin
+  MyTimer:= TMyTimer.Create;
   Config:= GetConfig;
-
   MenuFile.Caption    := MENU_FILE;
   MenuToggle.Caption  := BTN_START;
   MenuReset.Caption   := BTN_RESET;
@@ -185,7 +185,6 @@ begin
     MessageDlg(MSG_OPEN_INI, mtError, [mbOK], 0);
     Exit;
   end;
-  Minutes.Value:= Config.Minutes;
 
   // Use minutes argument if it's the only parameter and it's numeric
   if (ParamCount = 1) and (IsInteger(ParamStr(1))) then
@@ -195,6 +194,70 @@ begin
   ResetCountdown(Sender);
   if Config.AutoStart then
     ToggleCountdown(Sender);
+end;
+
+procedure TMainForm.OnDestroyForm(Sender: TObject);
+begin
+  if GetConfig.AutoSave then
+    SaveSettings(Sender);
+end;
+
+procedure TMainForm.OnShowForm(Sender: TObject);
+begin
+  if OnShowFormFirstTime then
+  begin
+    OnShowFormFirstTime:= False;
+    ApplyConfig;
+    // ApplyConfig does not set MainForm dimensions and
+    Minutes.Value:= GetConfig.Minutes;
+    // TODO count value?
+  end;
+
+  // TODO Get this working for window size (getpreferred size gets form, not window)
+  // Get preferred size before font change, then after and add or subtract that delta from the
+  // window size?
+  // AutoSize is working on startup, just not when font size is changed.
+  // Need to find the method that will set the window to the preferred size, because the preferred size is correct
+  // setBounds does it, but it also requires
+  if FontSizeChanged then
+  begin
+  	//AutoSize:= True;
+    //MainForm.FontChanged(Sender);
+ 	  //GetPreferredSize(w, h, True);
+    //cRect := GetClientRect;
+    //cRect.Right := w;
+    //cRect.Bottom := h;
+    //AdjustClientRect(cRect);
+
+    // These two lines cause an exception - why I don't know
+    //Count.Width:= w;
+    //Count.Height:= h;
+
+    //InvalidatePreferredSize;
+    //Repaint;
+    //Resize;
+    //AdjustSize;
+
+	  //GetPreferredSize(w, h, True);
+   	//ShowMessageFmt('width: %d, height: %d', [w, h]);
+    //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
+    //WndWidth:= WndWidth + (w - FormerWidth);
+    //WndHeight:= WndHeight + (h - FormerHeight);
+    //SetBounds(Monitor.WorkareaRect.Right - w + rightAdjust, 0, w, h);
+    //WndWidth:= w;
+    //WndHeight:= h;
+  	//ShowMessageFmt('width: %d, height: %d', [w, h]);
+    //exit;
+  end;
+
+  //UpdateAlwaysOnTop(AlwaysOnTop);
+end;
+
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  WindowState   := wsNormal;
+  ShowInTaskBar := stDefault;
+  Show;
 end;
 
 procedure TMainForm.ResetCountdown(Sender: TObject);
@@ -359,6 +422,11 @@ begin
   end;
 end;
 
+{procedure TMainForm.Countdown(Sender: TObject);
+var Config: TConfig;
+begin
+end;}
+
 procedure TMainForm.ShowAbout(Sender: TObject);
 var
   AboutForm: TAboutForm;
@@ -368,59 +436,7 @@ begin
   AboutForm.Release;
 end;
 
-procedure TMainForm.OnDestroyForm(Sender: TObject);
-begin
-  if GetConfig.AutoSave then
-    SaveSettings(Sender);
-end;
 
-procedure TMainForm.OnShowForm(Sender: TObject);
-begin
-  if OnShowFormFirstTime then
-  begin
-    OnShowFormFirstTime:= False;
-    ApplyConfig;
-  end;
-
-  // TODO Get this working for window size (getpreferred size gets form, not window)
-  // Get preferred size before font change, then after and add or subtract that delta from the
-  // window size?
-  // AutoSize is working on startup, just not when font size is changed.
-  // Need to find the method that will set the window to the preferred size, because the preferred size is correct
-  // setBounds does it, but it also requires
-  if FontSizeChanged then
-  begin
-  	//AutoSize:= True;
-    //MainForm.FontChanged(Sender);
- 	  //GetPreferredSize(w, h, True);
-    //cRect := GetClientRect;
-    //cRect.Right := w;
-    //cRect.Bottom := h;
-    //AdjustClientRect(cRect);
-
-    // These two lines cause an exception - why I don't know
-    //Count.Width:= w;
-    //Count.Height:= h;
-
-    //InvalidatePreferredSize;
-    //Repaint;
-    //Resize;
-    //AdjustSize;
-
-	  //GetPreferredSize(w, h, True);
-   	//ShowMessageFmt('width: %d, height: %d', [w, h]);
-    //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
-    //WndWidth:= WndWidth + (w - FormerWidth);
-    //WndHeight:= WndHeight + (h - FormerHeight);
-    //SetBounds(Monitor.WorkareaRect.Right - w + rightAdjust, 0, w, h);
-    //WndWidth:= w;
-    //WndHeight:= h;
-  	//ShowMessageFmt('width: %d, height: %d', [w, h]);
-    //exit;
-  end;
-
-  //UpdateAlwaysOnTop(AlwaysOnTop);
-end;
 
 procedure TMainForm.SaveSettings(Sender: TObject);
 var
@@ -600,12 +616,6 @@ begin
   StopAudio();
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-  WindowState   := wsNormal;
-  ShowInTaskBar := stDefault;
-  Show;
-end;
 
 function TMainForm.IsInteger(S: String): boolean;
 begin

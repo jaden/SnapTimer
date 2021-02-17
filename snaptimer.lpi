@@ -85,7 +85,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -122,6 +122,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Config"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="model\mytimer.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
