@@ -319,7 +319,7 @@ begin
       UpdateButtonsAndMenus;
       TrayIconMain.Icon:= ImgIconRunning.Picture.Icon;
       if Config.TickingOn then
-        TUtils.PlayAudio('.\sounds\ticking\ticking.wav', True);
+        PlayTicking();
     end;
 
     Paused:
@@ -345,9 +345,9 @@ begin
       if Config.DoneMessageEnabled then
         ShowDoneMessage(Config.DoneMessage);
       if Config.AutoRestart then
-         ToggleCountdown(Sender)
-       else
-         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
+        ToggleCountdown(Sender)
+      else
+        TrayIconMain.Icon := ImgIconDone.Picture.Icon;
     end;
   end;
 end;
