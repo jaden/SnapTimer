@@ -9,7 +9,7 @@ uses
 
 type
   TMode = (Timer, Stopwatch);
-  TState = (Running, Stopped, Paused);
+  TState = (Ready, Running, Finished, Paused);
 
   // TODO find better name
   TMyTimer = class
@@ -18,11 +18,11 @@ type
     // Start or End time, depending on the Mode.
     FTime: TDateTime;
     FSeconds: Integer;
-
+    FSecondsInitial: Integer;
     FState: TState;
     FMode: TMode;
     FOnSecondElapsed: TNotifyEvent;
-    FOnFinished: TNotifyEvent;
+    FOnStateChanged: TNotifyEvent;
 
     function GetSeconds : Integer;
     procedure SetSeconds(AValue: Integer);
@@ -38,15 +38,17 @@ type
     procedure Start;
     procedure Pause;
     procedure Resume;
-    procedure StartPauseResume;
-    procedure Stop;
+    procedure Toggle;
+    procedure Reset;
 
     property Seconds: Integer read GetSeconds write SetSeconds;
     property Minutes: Integer read GetMinutes write SetMinutes;
     property State: TState read FState;
     property Mode: TMode read FMode write FMode;
     property OnSecondElapsed: TNotifyEvent read FOnSecondElapsed write FOnSecondElapsed;
-    property OnFinished: TNotifyEvent read FOnFinished write FOnFinished;
+    property OnStateChanged: TNotifyEvent read FOnStateChanged write FOnStateChanged;
+  private
+
 end;
 
 implementation
@@ -60,9 +62,10 @@ end;
 
 procedure TMyTimer.SetSeconds(AValue: Integer);
 begin
-  if State <> Stopped then
-     Raise Exception.Create('Timer is not in `Stopped` state');
+  if State <> Ready then
+    Raise Exception.Create('Timer is not in `Ready` state');
   FSeconds:= AValue;
+  FSecondsInitial:= AValue;
 end;
 
 function TMyTimer.GetMinutes : Integer;
@@ -72,9 +75,10 @@ end;
 
 procedure TMyTimer.SetMinutes(AValue: Integer);
 begin
-  if State <> Stopped then
-     Raise Exception.Create('Timer is not in `Stopped` state');
+  if State <> Ready then
+    Raise Exception.Create('Timer is not in `Ready` or `Finished` state');
   FSeconds:= AValue * 60;
+  FSecondsInitial:= FSeconds;
 end;
 
 procedure TMyTimer.OnTimer(Sender: TObject);
@@ -85,8 +89,9 @@ begin
     begin
       FTimer.Enabled:= False;
       FSeconds:= 0;
-      FState:= Stopped;
-      OnFinished(self);
+      FState:= Finished;
+      if Assigned(FOnStateChanged) then
+        FOnStateChanged(self);
     end
     else
       UpdateSeconds;
@@ -105,7 +110,8 @@ begin
   if s <> FSeconds then
   begin
     FSeconds:= s;
-    OnSecondElapsed(self);
+    if Assigned(FOnSecondElapsed) then
+      FOnSecondElapsed(self);
   end;
 end;
 
@@ -123,8 +129,12 @@ begin
   FTimer.Enabled:= False;
   FTimer.Interval:= 160;
   FTimer.OnTimer:= @OnTimer;
+  FSeconds:= 10 * 60;
+  FSecondsInitial:= FSeconds;
+  FState:= Ready;
   FMode:= Timer;
-  FState:= Stopped;
+  FOnSecondElapsed:= nil;
+  FOnStateChanged:= nil;
 end;
 
 destructor TMyTimer.Free;
@@ -135,49 +145,61 @@ end;
 
 procedure TMyTimer.Start;
 begin
-  if State <> Stopped then
-     Raise Exception.Create('Timer is not in `Stopped` state');
+  if State <> Ready then
+    Raise Exception.Create('Timer is not in `Ready` state');
 
   FState:= Running;
   UpdateTime;
+  if Assigned(FOnStateChanged) then
+    FOnStateChanged(self);
   FTimer.Enabled:= True;
 end;
 
 procedure TMyTimer.Pause;
 begin
   if State <> Running then
-     Raise Exception.Create('Timer is not in `Running` state');
+    Raise Exception.Create('Timer is not in `Running` state');
 
   FState:= Paused;
+  if Assigned(FOnStateChanged) then
+    FOnStateChanged(self);
   FTimer.Enabled:= False;
 end;
 
 procedure TMyTimer.Resume;
 begin
   if State <> Paused then
-     Raise Exception.Create('Timer is not in `Paused` state');
+    Raise Exception.Create('Timer is not in `Paused` state');
 
   FState:= Running;
   UpdateTime;
+  if Assigned(FOnStateChanged) then
+    FOnStateChanged(self);
   FTimer.Enabled:= True;
 end;
 
-procedure TMyTimer.StartPauseResume;
+procedure TMyTimer.Toggle;
 begin
   case State of
+      Ready : Start;
       Running : Pause;
-      Stopped : Start;
+      Finished : Reset;
       Paused : Resume;
   end;
 end;
 
-procedure TMyTimer.Stop;
+procedure TMyTimer.Reset;
+var PrevState: TState;
 begin
+  PrevState:= FState;
   FTimer.Enabled:= False;
-  FState:= Stopped;
-  // TODO reset FTime, FSeconds??
-  // Call OnFinished?
+  FState:= Ready;
+  FSeconds:= FSecondsInitial;
+  // We want FOnStateChanged to be called even if we are in `Ready` state.
+  if Assigned(FOnStateChanged) {and (PrevState <> Ready)} then
+    FOnStateChanged(self);
 end;
+
 
 end.
 

@@ -6,12 +6,10 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, MMSystem,
-  Windows, DateUtils, MyTimer;
+  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, Windows, DateUtils,
+  MyTimer;
 
 type
-  TMode = (Timer, Stopwatch);
-
   { TMainForm }
   TMainForm = class(TForm)
     ImgIconMain: TImage;
@@ -44,46 +42,39 @@ type
     MenuEdit: TMenuItem;
     TrayMenu: TPopupMenu;
     TimeLabel: TLabel;
-    Minutes: TSpinEdit;
+    TimeEdit: TSpinEdit;
     Count:   TStaticText;
-    Timer1:  TTimer;
     TrayIconMain: TTrayIcon;
     procedure OnCreateForm(Sender: TObject);
     procedure OnDestroyForm(Sender: TObject);
     procedure OnShowForm(Sender: TObject);
     procedure FormActivate(Sender: TObject);
-    procedure ToggleCompact(Sender: TObject);
-    procedure MinutesChanged(Sender: TObject);
-    procedure ShowAbout(Sender: TObject);
-    procedure CloseApp(Sender: TObject);
-    procedure Countdown(Sender: TObject);
-    procedure ResetCountdown(Sender: TObject);
-    procedure DisableTimer();
-    procedure EnableTimer();
-    procedure SetTimer();
-    procedure ShowOptions(Sender: TObject);
-    procedure ToggleCountdown(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormWindowStateChange(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
+    procedure CloseApp(Sender: TObject);
+
+    procedure ToggleCountdown(Sender: TObject);
+    procedure ResetCountdown(Sender: TObject);
+
+    procedure OnTick(Sender: TObject);
+    procedure OnTimerStateChanged(Sender: TObject);
+    procedure UpdateButtonsAndMenus;
     procedure UpdateTime();
+
+    procedure ToggleCompact(Sender: TObject);
+    procedure TimeEditChanged(Sender: TObject);
+    procedure ShowAbout(Sender: TObject);
+    procedure ShowOptions(Sender: TObject);
     procedure SaveSettings(Sender: TObject);
-    procedure PlayAudio(Path: string; Loop: boolean);
-    procedure StopAudio();
     procedure ShowDoneMessage(Msg: string);
     procedure ShowTrayMessage(Msg: string);
     procedure SetFieldsVisible(showFields: boolean);
     procedure PlayTicking();
   private
-    { private declarations }
     MyTimer : TMyTimer;
-    AudioPlaying: boolean;
-    Mode: TMode;
     FontSizeChanged : boolean;
     //FormerWidth : integer;
     //FormerHeight : integer;
-    EndTime: TDateTime;
-    StartTime: TDateTime;
-    CountdownDone: boolean;
     OnShowFormFirstTime: Boolean;
     procedure ApplyConfig;
   public
@@ -133,6 +124,8 @@ var
   Config: TConfig;
 begin
   MyTimer:= TMyTimer.Create;
+  MyTimer.OnSecondElapsed:= @OnTick;
+  MyTimer.OnStateChanged:= @OnTimerStateChanged;
   Config:= GetConfig;
   MenuFile.Caption    := MENU_FILE;
   MenuToggle.Caption  := BTN_START;
@@ -151,12 +144,8 @@ begin
 
   // Set all defaults, then load from .ini
 
-  Mode := Timer;
-  AudioPlaying := False;
   Self.DoubleBuffered := True;
   Count.DoubleBuffered := True;
-  Timer1.Interval := 150;
-  CountdownDone := False;
   OnShowFormFirstTime:= True;
 
   //AppName := ExtractFileName(Application.ExeName);
@@ -183,15 +172,14 @@ begin
     Exit;
   end;
 
-  // Use minutes argument if it's the only parameter and it's numeric
+  // Use TimeEdit argument if it's the only parameter and it's numeric
   if (ParamCount = 1) and (TUtils.IsInteger(ParamStr(1))) then
-    Minutes.Value := StrToInt(ParamStr(1));
+    TimeEdit.Value := StrToInt(ParamStr(1));
 
-  //UpdateTimeCaption(SecondsMode); ApplyConfig will do this
-  ResetCountdown(Sender);
   if Config.AutoStart then
     ToggleCountdown(Sender);
 end;
+
 
 procedure TMainForm.OnDestroyForm(Sender: TObject);
 begin
@@ -205,9 +193,9 @@ begin
   begin
     OnShowFormFirstTime:= False;
     ApplyConfig;
-    // ApplyConfig does not set MainForm dimensions and
-    Minutes.Value:= GetConfig.Minutes;
-    // TODO count value?
+    // ApplyConfig does not set MainForm dimensions and TimeEdit(TSpinEdit)
+    TimeEdit.Value:= GetConfig.Minutes;
+    MyTimer.Reset; // This will trigger OnTimerStateChanged
   end;
 
   // TODO Get this working for window size (getpreferred size gets form, not window)
@@ -246,8 +234,6 @@ begin
   	//ShowMessageFmt('width: %d, height: %d', [w, h]);
     //exit;
   end;
-
-  //UpdateAlwaysOnTop(AlwaysOnTop);
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -257,48 +243,156 @@ begin
   Show;
 end;
 
+procedure TMainForm.FormWindowStateChange(Sender: TObject);
+begin
+  if not GetConfig.MinToTray then
+    Exit;
+
+  if WindowState = wsMinimized then
+  begin
+    WindowState   := wsNormal;
+    ShowInTaskBar := stNever;
+    Hide;
+  end;
+end;
+
+procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
+begin
+  // TMainForm's KeyPreview property must be set to True for this to work.
+  if key = #27 then
+    Close; // 27 = Escape
+  if (TimeEdit.Focused) and (key = #13) then
+    ToggleCountdown(Sender);
+end;
+
+procedure TMainForm.CloseApp(Sender: TObject);
+begin
+  OnDestroyForm(Sender);
+  Close;
+end;
+
+
+procedure TMainForm.ToggleCountdown(Sender: TObject);
+begin
+  if (Sender.ClassName = Count.ClassName) and (not GetConfig.ClickTime) then
+    Exit;
+
+  // We want to go from `Finished` state directly to `Running` state. (or not?)
+  if MyTimer.State = TState.Finished then
+    MyTimer.Reset;
+
+  MyTimer.Toggle;
+end;
+
 procedure TMainForm.ResetCountdown(Sender: TObject);
 begin
   if (Sender.ClassName = Count.ClassName) and (not GetConfig.DblClickTime) then
     Exit;
-  // Turn off both looping audio and ticking
-  StopAudio();
-  DisableTimer();
-  SetTimer();
-  TrayIconMain.Icon := ImgIconMain.Picture.Icon;
+
+  MyTimer.Reset;
 end;
 
-procedure TMainForm.DisableTimer();
+procedure TMainForm.OnTick(Sender: TObject);
 begin
-  Timer1.Enabled     := False;
-  ImgPause.Visible   := False;
-  ImgStart.Visible   := True;
-  MenuToggle.Caption := BTN_START;
-  TrayMenuToggle.Caption := BTN_START;
-  StopAudio();
-end;
-
-procedure TMainForm.EnableTimer();
-begin
-  Timer1.Enabled     := True;
-  ImgPause.Visible   := True;
-  ImgStart.Visible   := False;
-  MenuToggle.Caption := BTN_PAUSE;
-  TrayMenuToggle.Caption := BTN_PAUSE;
-  TrayIconMain.Icon  := ImgIconRunning.Picture.Icon;
-
-  if GetConfig.TickingOn then
-    PlayTicking();
-end;
-
-procedure TMainForm.SetTimer();
-begin
-  if GetConfig.SecondsMode then
-    Timer1.Tag := Minutes.Value
-  else
-    Timer1.Tag := Minutes.Value * 60;
   UpdateTime();
 end;
+
+procedure TMainForm.OnTimerStateChanged(Sender: TObject);
+var Config: TConfig;
+begin
+  Config:= GetConfig;
+
+  case MyTimer.State of
+    Ready:
+    begin
+      if Config.SecondsMode then
+        MyTimer.Seconds := TimeEdit.Value
+      else
+        MyTimer.Minutes:= TimeEdit.Value;
+      UpdateTime();
+      UpdateButtonsAndMenus;
+      TrayIconMain.Icon:= ImgIconMain.Picture.Icon;
+    end;
+
+    Running:
+    begin
+      UpdateButtonsAndMenus;
+      TrayIconMain.Icon:= ImgIconRunning.Picture.Icon;
+      if Config.TickingOn then
+        TUtils.PlayAudio('.\sounds\ticking\ticking.wav', True);
+    end;
+
+    Paused:
+    begin
+      UpdateButtonsAndMenus;
+      TrayIconMain.Icon:= ImgIconPaused.Picture.Icon;
+      TUtils.StopAudio;
+    end;
+
+    Finished:
+    begin
+      UpdateTime();
+      UpdateButtonsAndMenus;
+      TUtils.StopAudio;
+
+      Application.Title := APP_NAME;
+      if Config.DoneAudioEnabled then
+        TUtils.PlayAudio(Config.DoneAudio, Config.LoopAudio);
+      if Config.DoneAppEnabled then
+        TUtils.RunApp(Config.DoneApp);
+      if Config.DoneTrayMsgEnabled then
+        ShowTrayMessage(Config.DoneTrayMsg);
+      if Config.DoneMessageEnabled then
+        ShowDoneMessage(Config.DoneMessage);
+      if Config.AutoRestart then
+         ToggleCountdown(Sender)
+       else
+         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
+    end;
+  end;
+end;
+
+// When it comes to buttons and menus, there are only two states.
+procedure TMainForm.UpdateButtonsAndMenus;
+begin
+  if MyTimer.State = TState.Running then
+  begin
+    ImgPause.Visible   := True;
+    ImgStart.Visible   := False;
+    MenuToggle.Caption := BTN_PAUSE;
+    TrayMenuToggle.Caption := BTN_PAUSE;
+  end
+  else
+  begin
+    ImgPause.Visible   := False;
+    ImgStart.Visible   := True;
+    MenuToggle.Caption := BTN_START;
+    TrayMenuToggle.Caption := BTN_START;
+  end;
+end;
+
+// TODO Animate icon between alarm icon and main so it blinks every second
+// Instead of playing icon, animate the clock hands so they go around?
+// http://delphi.about.com/od/kbwinshell/l/aa122501a.htm
+procedure TMainForm.UpdateTime();
+begin
+  // Changing caption while it's not visible keeps time from flashing
+  Count.Visible := False;
+  Count.Caption := TUtils.SecondsToTime(MyTimer.Seconds, GetConfig.HideSeconds);
+  Count.Visible := True;
+  MenuCount.Caption := Count.Caption;
+  if MyTimer.State = TState.Running then
+  begin
+    Application.Title := Count.Caption + ' - ' + APP_NAME;
+    TrayIconMain.Hint := Count.Caption;
+  end
+  else
+  begin
+    Application.Title := APP_NAME;
+    TrayIconMain.Hint := APP_NAME;
+  end;
+end;
+
 
 procedure TMainForm.ShowOptions(Sender: TObject);
 var
@@ -330,12 +424,12 @@ begin
     // TODO Get font colors and background color to be shown - what's up?
 
     //if FontSizeChanged then OnShowForm(Sender);
-    if Timer1.Enabled then
+    if MyTimer.State = TState.Running then
     begin
       if Config.TickingOn then
         PlayTicking
       else
-        StopAudio();
+        TUtils.StopAudio;
     end;
 
     if Config.AutoSave then
@@ -346,83 +440,6 @@ begin
   end;
 end;
 
-procedure TMainForm.ToggleCountdown(Sender: TObject);
-begin
-  if (Sender.ClassName = Count.ClassName) and (not GetConfig.ClickTime) then
-    Exit;
-
-  if Minutes.Value = 0 then
-  begin
-    Mode := Stopwatch;
-    StartTime := Now - (Timer1.Tag * OneSecond);
-  end
-  else
-  begin
-    Mode := Timer;
-    EndTime := Now + (Timer1.Tag * OneSecond);
-  end;
-
-  if Timer1.Enabled then
-  begin
-    TrayIconMain.Icon := ImgIconPaused.Picture.Icon;
-    DisableTimer();
-  end
-  else
-  begin
-    if CountdownDone then
-    begin
-        // TODO When restarting after countdown has elapsed, quickly jumps from
-        // starting number to next one - fix?
-        CountdownDone := False;
-        ResetCountdown(Sender);
-        EndTime := Now + (Timer1.Tag * OneSecond);
-    end;
-    EnableTimer();
-  end
-end;
-
-procedure TMainForm.Countdown(Sender: TObject);
-var Config: TConfig;
-begin
-  Config:= GetConfig;
-  if MODE = Stopwatch then
-  begin
-    Timer1.Tag := SecondsBetween(StartTime, Now);
-    UpdateTime();
-  end
-  else
-  begin
-    if EndTime <= Now then
-    begin
-      Timer1.Tag := 0;
-      UpdateTime();
-      DisableTimer();
-      CountdownDone := True;
-      Application.Title := APP_NAME;
-      if Config.DoneAudioEnabled then
-        PlayAudio(Config.DoneAudio, Config.LoopAudio);
-      if Config.DoneAppEnabled then
-        TUtils.RunApp(Config.DoneApp);
-      if Config.DoneTrayMsgEnabled then
-        ShowTrayMessage(Config.DoneTrayMsg);
-      if Config.DoneMessageEnabled then
-        ShowDoneMessage(Config.DoneMessage);
-
-      if Config.AutoRestart then
-        ToggleCountdown(Sender)
-      else
-        TrayIconMain.Icon := ImgIconDone.Picture.Icon;
-    end
-    else
-      UpdateTime();
-    Timer1.Tag := SecondsBetween(EndTime, Now);
-  end;
-end;
-
-{procedure TMainForm.Countdown(Sender: TObject);
-var Config: TConfig;
-begin
-end;}
 
 procedure TMainForm.ShowAbout(Sender: TObject);
 var
@@ -434,7 +451,6 @@ begin
 end;
 
 
-
 procedure TMainForm.SaveSettings(Sender: TObject);
 var
   Config: TConfig;
@@ -443,7 +459,7 @@ begin
   Config:= GetConfig;
 
   // These config values are not set in OptionsForm.
-  Config.Minutes:= Minutes.Value;
+  Config.Minutes:= TimeEdit.Value;
   GetWindowRect(self.Handle, wRect);
   Config.WndWidth:= wRect.Right - wRect.Left;
   Config.WndHeight:= wRect.Bottom - wRect.Top;
@@ -454,9 +470,9 @@ begin
     MessageDlg(MSG_WRITE_INI, mtError, [mbOK], 0);
 end;
 
-procedure TMainForm.MinutesChanged(Sender: TObject);
+procedure TMainForm.TimeEditChanged(Sender: TObject);
 begin
-  if not Timer1.Enabled then
+  if (MyTimer.State <> TState.Running) and (MyTimer.State <> TState.Paused) then
     ResetCountdown(Sender);
 end;
 
@@ -467,104 +483,6 @@ begin
 //  CompactMode := not CompactMode;
 end;
 
- // TODO Figure out how to remove the fields from the form so they don't
- // take up space anymore (and count can expand to top)
- // Easier to create a new form, hide this one and show the other one
- // Set border style to none too.
-procedure TMainForm.SetFieldsVisible(showFields: boolean);
-begin
-  if showFields then
-  begin
-    MainForm.Menu := MainMenu1;
-  end
-  else
-  begin
-    MainForm.Menu    := nil;
-    TimeLabel.Visible := showFields;
-    Minutes.Visible  := showFields;
-    ImgStart.Visible := showFields;
-    ImgReset.Visible := showFields;
-    ImgPause.Visible := showFields;
-  end;
-end;
-
-procedure TMainForm.CloseApp(Sender: TObject);
-begin
-  OnDestroyForm(Sender);
-  Close;
-end;
-
-
-procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
-begin
-  // TMainForm's KeyPreview property must be set to True for this to work.
-  if key = #27 then
-    Close; // 27 = Escape
-  if (Minutes.Focused) and (key = #13) then
-    ToggleCountdown(Sender);
-end;
-
- // TODO Animate icon between alarm icon and main so it blinks every second
- // Instead of playing icon, animate the clock hands so they go around?
- // http://delphi.about.com/od/kbwinshell/l/aa122501a.htm
-procedure TMainForm.UpdateTime();
-begin
-  // Changing caption while it's not visible keeps time from flashing
-  Count.Visible := False;
-  Count.Caption := TUtils.SecondsToTime(Timer1.Tag, GetConfig.HideSeconds);
-  Count.Visible := True;
-  MenuCount.Caption := Count.Caption;
-  if Timer1.Enabled then
-  begin
-    Application.Title := Count.Caption + ' - ' + APP_NAME;
-    TrayIconMain.Hint := Count.Caption;
-  end
-  else
-  begin
-    Application.Title := APP_NAME;
-    TrayIconMain.Hint := APP_NAME;
-  end;
-end;
-
-procedure TMainForm.FormWindowStateChange(Sender: TObject);
-begin
-  if not GetConfig.MinToTray then
-    Exit;
-
-  if WindowState = wsMinimized then
-  begin
-    WindowState   := wsNormal;
-    ShowInTaskBar := stNever;
-    Hide;
-  end;
-end;
-
-
-
-procedure TMainForm.PlayAudio(Path: string; Loop: boolean);
-begin
-  if AudioPlaying then
-    Exit;
-  if Loop then
-  begin
-    AudioPlaying := True;
-    sndPlaySound(PChar(TUtils.GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC or SND_LOOP);
-  end
-  else
-    sndPlaySound(PChar(TUtils.GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC);
-end;
-
-procedure TMainForm.StopAudio();
-begin
-  sndPlaySound(nil, 0);
-  AudioPlaying := False;
-end;
-
-procedure TMainForm.PlayTicking();
-begin
-  sndPlaySound(PChar(TUtils.GetFilePath('.\sounds\ticking\ticking.wav')), SND_NODEFAULT or
-    SND_ASYNC or SND_LOOP);
-end;
 
 procedure TMainForm.ShowTrayMessage(Msg: string);
 begin
@@ -581,8 +499,37 @@ begin
   // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
   Windows.MessageBox(self.Handle, pChar(msg), 'Done',
      MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
-  StopAudio();
+  TUtils.StopAudio;
 end;
+
+// TODO Figure out how to remove the fields from the form so they don't
+// take up space anymore (and count can expand to top)
+// Easier to create a new form, hide this one and show the other one
+// Set border style to none too.
+procedure TMainForm.SetFieldsVisible(showFields: boolean);
+begin
+ if showFields then
+ begin
+   MainForm.Menu := MainMenu1;
+ end
+ else
+ begin
+   MainForm.Menu    := nil;
+   TimeLabel.Visible := showFields;
+   TimeEdit.Visible  := showFields;
+   ImgStart.Visible := showFields;
+   ImgReset.Visible := showFields;
+   ImgPause.Visible := showFields;
+ end;
+end;
+
+
+
+procedure TMainForm.PlayTicking();
+begin
+  TUtils.PlayAudio('.\sounds\ticking\ticking.wav', True);
+end;
+
 
 procedure TMainForm.ApplyConfig;
 var
@@ -592,14 +539,14 @@ var
 begin
   Config:= GetConfig;
   if Config.AlwaysOnTop then
-     FormStyle:= fsSystemStayOnTop
+    FormStyle:= fsSystemStayOnTop
   else
-      FormStyle:= fsNormal;
+    FormStyle:= fsNormal;
 
   if Config.SecondsMode then
-     TimeLabel.Caption := LBL_SECONDS
+    TimeLabel.Caption := LBL_SECONDS
   else
-      TimeLabel.Caption := LBL_MINUTES;
+    TimeLabel.Caption := LBL_MINUTES;
 
   Count.Font.Quality := fqAntialiased;
   Count.Font.Name := Config.Font.Name;

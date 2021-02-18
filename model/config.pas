@@ -53,6 +53,7 @@ type
     // Font
     FFont: TFontConfig;
     FDefaultFont: TFontConfig;
+
     procedure SetDoneMessage(Msg: String);
     procedure SetDoneTrayMessage(Msg: String);
   public
@@ -176,6 +177,32 @@ const
    ConfigInstance : TConfig;
 
 
+ function FontStylesToInt(FontStyles: TFontStyles): integer;
+ var
+   Mask:  integer;
+   Style: TFontStyle;
+ begin
+   // Translate the set into a bit mask
+   Mask := 0;
+   for Style := Low(TFontStyle) to High(TFontStyle) do
+     if Style in FontStyles then
+       Mask := Mask or (1 shl Ord(Style));
+   Result   := Mask;
+ end;
+
+ function IntToFontStyles(Mask: integer): TFontStyles;
+ var
+   i: integer;
+   StyleSet: TFontStyles;
+ begin
+   // Translate the bit mask into a set
+   StyleSet := [];
+   for i := 0 to Ord(High(TFontStyle)) do
+     if Mask and (1 shl i) <> 0 then
+       StyleSet := StyleSet + [TFontStyle(i)];
+   Result := StyleSet;
+ end;
+
 procedure TConfig.SetDoneMessage(Msg: String);
 begin
   // TODO Set some reasonable length limit
@@ -188,31 +215,6 @@ begin
   FDoneTrayMsg:= Msg;
 end;
 
-function FontStylesToInt(FontStyles: TFontStyles): integer;
-var
-  Mask:  integer;
-  Style: TFontStyle;
-begin
-  // Translate the set into a bit mask
-  Mask := 0;
-  for Style := Low(TFontStyle) to High(TFontStyle) do
-    if Style in FontStyles then
-      Mask := Mask or (1 shl Ord(Style));
-  Result   := Mask;
-end;
-
-function IntToFontStyles(Mask: integer): TFontStyles;
-var
-  i: integer;
-  StyleSet: TFontStyles;
-begin
-  // Translate the bit mask into a set
-  StyleSet := [];
-  for i := 0 to Ord(High(TFontStyle)) do
-    if Mask and (1 shl i) <> 0 then
-      StyleSet := StyleSet + [TFontStyle(i)];
-  Result := StyleSet;
-end;
 
 constructor TConfig.Create;
 begin
@@ -372,6 +374,7 @@ function TConfig.GetDefaultFont : TFontConfig;
 begin
   Result:= FDefaultFont;
 end;
+
 
 function GetConfig : TConfig;
 begin

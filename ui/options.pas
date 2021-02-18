@@ -312,8 +312,8 @@ end;
 
 procedure TOptionsForm.TestAudio(Sender: TObject);
 begin
-with Self.Owner as TMainForm do
-  PlayAudio(NotifyAudio.Text, False);
+  with Self.Owner as TMainForm do
+    TUtils.PlayAudio(NotifyAudio.Text, False);
 end;
 
 procedure TOptionsForm.TestMessage(Sender: TObject);

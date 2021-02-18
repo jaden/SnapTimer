@@ -4,13 +4,13 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="development"/>
-    <Units Count="30">
+    <Units Count="31">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="11"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="50"/>
       </Unit0>
       <Unit1>
         <Filename Value="ui\about.pas"/>
@@ -19,7 +19,7 @@
         <UnitName Value="About"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="50"/>
       </Unit1>
       <Unit2>
         <Filename Value="ui\floating.pas"/>
@@ -29,7 +29,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="50"/>
       </Unit2>
       <Unit3>
         <Filename Value="ui\mainform1.pas"/>
@@ -39,10 +39,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainForm1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="113"/>
-        <CursorPos X="3" Y="135"/>
-        <UsageCount Value="43"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="264"/>
+        <CursorPos X="35" Y="284"/>
+        <UsageCount Value="50"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit3>
@@ -54,51 +54,59 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Options"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="88"/>
-        <CursorPos X="35" Y="12"/>
-        <UsageCount Value="43"/>
+        <TopLine Value="285"/>
+        <CursorPos X="33" Y="313"/>
+        <UsageCount Value="50"/>
       </Unit4>
       <Unit5>
         <Filename Value="model\config.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Config"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="52"/>
-        <CursorPos X="44"/>
-        <UsageCount Value="43"/>
+        <TopLine Value="170"/>
+        <CursorPos X="4" Y="177"/>
+        <UsageCount Value="50"/>
       </Unit5>
       <Unit6>
         <Filename Value="model\mytimer.pas"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="104"/>
-        <CursorPos X="20" Y="127"/>
-        <UsageCount Value="25"/>
+        <TopLine Value="170"/>
+        <CursorPos X="75" Y="198"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
+        <Filename Value="model\utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="30" Y="15"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
         <Filename Value="mainform1.pas"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainForm1"/>
         <UsageCount Value="18"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="about.pas"/>
         <ComponentName Value="AboutForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
         <UsageCount Value="18"/>
-      </Unit8>
-      <Unit9>
+      </Unit9>
+      <Unit10>
         <Filename Value="settings.pas"/>
         <ComponentName Value="OptionsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UsageCount Value="18"/>
-      </Unit9>
-      <Unit10>
+      </Unit10>
+      <Unit11>
         <Filename Value="ui\settings.pas"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
@@ -106,131 +114,123 @@
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="18"/>
-      </Unit10>
-      <Unit11>
+      </Unit11>
+      <Unit12>
         <Filename Value="..\..\..\programs\lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1831"/>
-        <CursorPos X="3" Y="1848"/>
-        <UsageCount Value="13"/>
-      </Unit11>
-      <Unit12>
+        <TopLine Value="739"/>
+        <CursorPos X="3" Y="750"/>
+        <UsageCount Value="14"/>
+      </Unit12>
+      <Unit13>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\rtl\objpas\sysutils\finah.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="22"/>
         <UsageCount Value="8"/>
-      </Unit12>
-      <Unit13>
+      </Unit13>
+      <Unit14>
         <Filename Value="..\..\..\programs\lazarus\lcl\graphics.pp"/>
         <UnitName Value="Graphics"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="545"/>
         <CursorPos X="14" Y="561"/>
         <UsageCount Value="10"/>
-      </Unit13>
-      <Unit14>
+      </Unit14>
+      <Unit15>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="4365"/>
         <CursorPos X="46" Y="4379"/>
         <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
+      </Unit15>
+      <Unit16>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="645"/>
         <CursorPos Y="662"/>
         <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
+      </Unit16>
+      <Unit17>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\font.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="906"/>
         <CursorPos Y="923"/>
         <UsageCount Value="9"/>
-      </Unit16>
-      <Unit17>
+      </Unit17>
+      <Unit18>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1462"/>
         <CursorPos Y="1478"/>
         <UsageCount Value="10"/>
-      </Unit17>
-      <Unit18>
+      </Unit18>
+      <Unit19>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3752"/>
         <CursorPos X="3" Y="3760"/>
         <UsageCount Value="10"/>
-      </Unit18>
-      <Unit19>
+      </Unit19>
+      <Unit20>
         <Filename Value="..\..\..\programs\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1281"/>
         <CursorPos X="18" Y="1298"/>
         <UsageCount Value="10"/>
-      </Unit19>
-      <Unit20>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\..\..\programs\lazarus\lcl\include\menuitem.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="69"/>
         <CursorPos Y="87"/>
         <UsageCount Value="11"/>
-      </Unit20>
-      <Unit21>
+      </Unit21>
+      <Unit22>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\rtl\inc\typshrdh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="122"/>
         <CursorPos X="44" Y="146"/>
         <UsageCount Value="10"/>
-      </Unit21>
-      <Unit22>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\rtl\objpas\sysutils\datih.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="113"/>
         <CursorPos X="24" Y="130"/>
         <UsageCount Value="10"/>
-      </Unit22>
-      <Unit23>
+      </Unit23>
+      <Unit24>
         <Filename Value="..\..\..\programs\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="175"/>
         <CursorPos X="23" Y="192"/>
         <UsageCount Value="10"/>
-      </Unit23>
-      <Unit24>
+      </Unit24>
+      <Unit25>
         <Filename Value="..\..\..\programs\lazarus\lcl\customtimer.pas"/>
         <UnitName Value="CustomTimer"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="115"/>
         <CursorPos X="3" Y="124"/>
         <UsageCount Value="10"/>
-      </Unit24>
-      <Unit25>
+      </Unit25>
+      <Unit26>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\packages\rtl-objpas\src\inc\dateutil.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="245"/>
         <CursorPos X="10" Y="262"/>
         <UsageCount Value="12"/>
-      </Unit25>
-      <Unit26>
+      </Unit26>
+      <Unit27>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="101"/>
         <CursorPos X="3" Y="118"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="model\utils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="27"/>
-        <CursorPos X="38" Y="46"/>
-        <UsageCount Value="21"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\..\programs\lazarus\fpc\3.2.0\source\rtl\win\wininc\ascdef.inc"/>
@@ -247,119 +247,135 @@
         <CursorPos X="6" Y="15152"/>
         <UsageCount Value="10"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="..\..\..\programs\lazarus\lcl\include\customedit.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="592"/>
+        <CursorPos X="37" Y="598"/>
+        <UsageCount Value="10"/>
+      </Unit30>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="550" Column="30" TopLine="533"/>
+        <Caret Line="293" TopLine="275"/>
       </Position1>
       <Position2>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="101" Column="16" TopLine="88"/>
+        <Caret Line="481" TopLine="464"/>
       </Position2>
       <Position3>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="130" Column="14" TopLine="115"/>
+        <Caret Column="22"/>
       </Position3>
       <Position4>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="132" Column="35" TopLine="115"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="153" Column="28" TopLine="151"/>
       </Position4>
       <Position5>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="30" Column="35" TopLine="12"/>
+        <Caret Line="290" Column="8" TopLine="275"/>
       </Position5>
       <Position6>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="569" Column="29" TopLine="541"/>
+        <Caret Line="66" Column="23" TopLine="50"/>
       </Position6>
       <Position7>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="132" Column="42" TopLine="115"/>
+        <Caret Line="64" Column="25" TopLine="41"/>
       </Position7>
       <Position8>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="131" Column="29" TopLine="115"/>
+        <Caret Line="509" TopLine="497"/>
       </Position8>
       <Position9>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="132" Column="29" TopLine="115"/>
+        <Caret Line="377" Column="21" TopLine="361"/>
       </Position9>
       <Position10>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="518" Column="74" TopLine="501"/>
+        <Caret Line="430" Column="20" TopLine="403"/>
       </Position10>
       <Position11>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="555" Column="18" TopLine="538"/>
+        <Caret Line="72" Column="26" TopLine="56"/>
       </Position11>
       <Position12>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="569" Column="16" TopLine="552"/>
+        <Caret Line="281" TopLine="261"/>
       </Position12>
       <Position13>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="556" Column="35" TopLine="465"/>
+        <Caret Line="284" TopLine="261"/>
       </Position13>
       <Position14>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="141" Column="36" TopLine="115"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="185" TopLine="168"/>
       </Position14>
       <Position15>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="101" Column="26" TopLine="97"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="186" TopLine="168"/>
       </Position15>
       <Position16>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="140" Column="42" TopLine="115"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="150" TopLine="133"/>
       </Position16>
       <Position17>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="141" Column="29" TopLine="124"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="153" TopLine="133"/>
       </Position17>
       <Position18>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="130" Column="3" TopLine="115"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="154" TopLine="133"/>
       </Position18>
       <Position19>
-        <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="135" Column="5" TopLine="128"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="155" TopLine="133"/>
       </Position19>
       <Position20>
-        <Filename Value="ui\mainform1.pas"/>
+        <Filename Value="model\mytimer.pas"/>
+        <Caret Line="156" TopLine="133"/>
       </Position20>
       <Position21>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="565" Column="30" TopLine="537"/>
+        <Caret Line="302" TopLine="285"/>
       </Position21>
       <Position22>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Column="30"/>
+        <Caret Line="303" TopLine="285"/>
       </Position22>
       <Position23>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="10" Column="30"/>
+        <Caret Line="305" TopLine="285"/>
       </Position23>
       <Position24>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="78" Column="23" TopLine="50"/>
+        <Caret Line="65" Column="18" TopLine="47"/>
       </Position24>
       <Position25>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="135" Column="23" TopLine="107"/>
+        <Caret Line="476" Column="15" TopLine="457"/>
       </Position25>
       <Position26>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="187" Column="29" TopLine="161"/>
+        <Caret Line="65" Column="15" TopLine="48"/>
       </Position26>
       <Position27>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="405" Column="9" TopLine="389"/>
+        <Caret Line="476" Column="13" TopLine="472"/>
       </Position27>
       <Position28>
         <Filename Value="ui\mainform1.pas"/>
-        <Caret Line="514" Column="20" TopLine="497"/>
+        <Caret Line="57" Column="15" TopLine="39"/>
       </Position28>
+      <Position29>
+        <Filename Value="ui\mainform1.pas"/>
+        <Caret Line="353" Column="23" TopLine="338"/>
+      </Position29>
+      <Position30>
+        <Filename Value="ui\mainform1.pas"/>
+        <Caret Line="198" Column="16" TopLine="181"/>
+      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

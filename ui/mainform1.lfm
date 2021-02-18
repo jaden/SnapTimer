@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 533
+  Left = 701
   Height = 242
-  Top = 312
+  Top = 305
   Width = 261
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
@@ -9,7 +9,7 @@ object MainForm: TMainForm
   VertScrollBar.Page = 137
   VertScrollBar.Range = 26
   VertScrollBar.Visible = False
-  ActiveControl = Minutes
+  ActiveControl = TimeEdit
   Caption = 'SnapTimer'
   ClientHeight = 222
   ClientWidth = 261
@@ -26,7 +26,7 @@ object MainForm: TMainForm
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
   object TimeLabel: TLabel
-    AnchorSideRight.Control = Minutes
+    AnchorSideRight.Control = TimeEdit
     Left = 7
     Height = 16
     Top = 5
@@ -35,7 +35,7 @@ object MainForm: TMainForm
     BorderSpacing.Left = 5
     BorderSpacing.Right = 2
     Caption = 'Minutes:'
-    FocusControl = Minutes
+    FocusControl = TimeEdit
     Layout = tlCenter
     ParentColor = False
     ParentFont = False
@@ -181,7 +181,7 @@ object MainForm: TMainForm
     Left = 112
     Height = 25
     Hint = 'Pause'
-    Top = 2
+    Top = 0
     Width = 25
     OnClick = ToggleCountdown
     ParentShowHint = False
@@ -434,7 +434,7 @@ object MainForm: TMainForm
     }
     Visible = False
   end
-  object Minutes: TSpinEdit
+  object TimeEdit: TSpinEdit
     AnchorSideLeft.Side = asrBottom
     Left = 59
     Height = 23
@@ -443,7 +443,7 @@ object MainForm: TMainForm
     BorderSpacing.Right = 5
     Increment = 5
     MaxValue = 5999
-    OnChange = MinutesChanged
+    OnChange = TimeEditChanged
     ParentFont = False
     TabOrder = 0
   end
@@ -471,13 +471,6 @@ object MainForm: TMainForm
     ParentFont = False
     TabOrder = 1
     Transparent = False
-  end
-  object Timer1: TTimer
-    Enabled = False
-    OnTimer = Countdown
-    OnStartTimer = Countdown
-    Left = 192
-    Top = 160
   end
   object TrayIconMain: TTrayIcon
     BalloonFlags = bfInfo

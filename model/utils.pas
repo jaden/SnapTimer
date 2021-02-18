@@ -11,12 +11,14 @@ type
     class function GetFilePath(Path: string): string;
     class procedure RunApp(Path: string);
     class function IsInteger(S: String): boolean;
+    class procedure PlayAudio(Path: string; Loop: boolean);
+    class procedure StopAudio;
   end;
 
 implementation
 
 uses
-  Classes, SysUtils, StrUtils, Forms, Windows;
+  Classes, SysUtils, StrUtils, Forms, Windows, MMSystem;
 
 class function TUtils.SecondsToTime(Seconds: integer; HideSeconds: Boolean): string;
 var
@@ -59,6 +61,21 @@ begin
     Result := False;
   end;
 end;
+
+
+class procedure TUtils.PlayAudio(Path: string; Loop: boolean);
+begin
+  if Loop then
+    sndPlaySound(PChar(GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC or SND_LOOP)
+  else
+    sndPlaySound(PChar(GetFilePath(Path)), SND_NODEFAULT or SND_ASYNC);
+end;
+
+class procedure TUtils.StopAudio;
+begin
+  sndPlaySound(nil, 0);
+end;
+
 
 end.
 
