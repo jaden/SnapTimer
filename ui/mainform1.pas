@@ -89,7 +89,7 @@ var
 implementation
 
 uses
-  Config, Utils;
+  Config, Utils, MsgBox;
 
 { TMainForm }
 
@@ -497,8 +497,12 @@ end;
 procedure TMainForm.ShowDoneMessage(Msg: string);
 begin
   // http://msdn.microsoft.com/en-us/library/ms645505(VS.85).aspx
-  Windows.MessageBox(self.Handle, pChar(msg), 'Done',
-     MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
+  //Windows.MessageBox(self.Handle, pChar(msg), 'Done',
+  //   MB_SYSTEMMODAL or MB_SETFOREGROUND or MB_TOPMOST or MB_ICONINFORMATION);
+  MsgboxForm := TMsgBoxForm.Create(Self);
+  MsgBoxForm.SetText(Msg);
+  MsgboxForm.ShowModal;
+  MsgboxForm.Release;
   TUtils.StopAudio;
 end;
 

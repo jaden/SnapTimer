@@ -85,7 +85,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -130,6 +130,13 @@
         <Filename Value="model\utils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="ui\msgbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MsgBoxForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
