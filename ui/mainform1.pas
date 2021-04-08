@@ -48,9 +48,9 @@ type
     procedure OnCreateForm(Sender: TObject);
     procedure OnDestroyForm(Sender: TObject);
     procedure OnShowForm(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
     procedure FormWindowStateChange(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
+    procedure TrayIconMainClick(Sender: TObject);
     procedure CloseApp(Sender: TObject);
 
     procedure ToggleCountdown(Sender: TObject);
@@ -103,7 +103,8 @@ const
   MENU_OPTIONS   = 'Op&tions';
   MENU_HELP      = '&Help';
   MENU_ABOUT     = '&About';
-  TRAY_MENU_SHOW = 'Show application';
+  TRAY_MENU_SHOW = 'Show Application';
+  TRAY_MENU_HIDE = 'Hide Application';
 
   // Buttons
   BTN_START = '&Start';
@@ -181,6 +182,7 @@ begin
 end;
 
 
+
 procedure TMainForm.OnDestroyForm(Sender: TObject);
 begin
   if GetConfig.AutoSave then
@@ -236,24 +238,33 @@ begin
   end;
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-  WindowState   := wsNormal;
-  ShowInTaskBar := stDefault;
-  Show;
-end;
-
 procedure TMainForm.FormWindowStateChange(Sender: TObject);
 begin
-  if not GetConfig.MinToTray then
-    Exit;
-
   if WindowState = wsMinimized then
   begin
-    WindowState   := wsNormal;
-    ShowInTaskBar := stNever;
-    Hide;
+    TrayMenuShow.Caption:= TRAY_MENU_SHOW;
+    if GetConfig.MinToTray then
+    begin
+      // SysTray hack
+      // https://forum.lazarus.freepascal.org/index.php/topic,2194.msg9843.html#msg9843
+      WindowState:= wsNormal;
+      Hide;
+      ShowInTaskBar := stNever;
+
+      // Restore WindowState to what it was
+      WindowState:= wsMinimized;
+    end;
+  end
+  else if WindowState = wsNormal then
+  begin
+    TrayMenuShow.Caption:= TRAY_MENU_HIDE;
+    if GetConfig.MinToTray then
+    begin
+      ShowInTaskBar := stDefault;
+      Show;
+    end;
   end;
+
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
@@ -264,6 +275,23 @@ begin
   if (TimeEdit.Focused) and (key = #13) then
     ToggleCountdown(Sender);
 end;
+
+procedure TMainForm.TrayIconMainClick(Sender: TObject);
+begin
+  if WindowState = wsNormal then
+  begin
+    // On Windows setting wsMinimized does not minimize to taskbar.
+    //WindowState:= wsMinimized;
+    Application.Minimize;
+  end
+  else if WindowState = wsMinimized then
+  begin
+    // Setting WindowState to wsNormal does not call FormOnWindowStateChange
+    WindowState:= wsNormal;
+    FormWindowStateChange(Sender);
+  end;
+end;
+
 
 procedure TMainForm.CloseApp(Sender: TObject);
 begin
@@ -351,6 +379,7 @@ begin
     end;
   end;
 end;
+
 
 // When it comes to buttons and menus, there are only two states.
 procedure TMainForm.UpdateButtonsAndMenus;

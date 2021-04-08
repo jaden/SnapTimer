@@ -17,7 +17,6 @@ object MainForm: TMainForm
   Constraints.MinWidth = 160
   KeyPreview = True
   Menu = MainMenu1
-  OnActivate = FormActivate
   OnCreate = OnCreateForm
   OnDestroy = OnDestroyForm
   OnKeyPress = FormKeyPress
@@ -515,7 +514,7 @@ object MainForm: TMainForm
       AC41
     }
     Visible = True
-    OnClick = ToggleCountdown
+    OnClick = TrayIconMainClick
     Left = 112
     Top = 160
   end
@@ -572,12 +571,12 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object TrayMenuShow: TMenuItem
-      Caption = 'Show Application'
-      OnClick = FormActivate
+      Caption = 'Hide Application'
+      Default = True
+      OnClick = TrayIconMainClick
     end
     object TrayMenuToggle: TMenuItem
       Caption = 'Start/Pause'
-      Default = True
       OnClick = ToggleCountdown
     end
     object TrayMenuReset: TMenuItem
