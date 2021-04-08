@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 701
+  Left = 703
   Height = 242
   Top = 305
-  Width = 261
+  Width = 259
   HorzScrollBar.Page = 274
   HorzScrollBar.Range = 275
   HorzScrollBar.Visible = False
@@ -10,9 +10,11 @@ object MainForm: TMainForm
   VertScrollBar.Range = 26
   VertScrollBar.Visible = False
   ActiveControl = TimeEdit
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'SnapTimer'
   ClientHeight = 222
-  ClientWidth = 261
+  ClientWidth = 259
   Constraints.MinHeight = 70
   Constraints.MinWidth = 160
   KeyPreview = True
@@ -446,30 +448,28 @@ object MainForm: TMainForm
     ParentFont = False
     TabOrder = 0
   end
-  object Count: TStaticText
+  object Count: TPanel
     Cursor = crHandPoint
     Left = 2
     Height = 190
     Top = 32
-    Width = 257
+    Width = 255
     Align = alBottom
-    Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
     BorderSpacing.Right = 2
-    BorderStyle = sbsSunken
+    BevelOuter = bvNone
     Caption = '00:00:00'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -48
     Font.Name = 'Arial Narrow'
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
-    OnClick = ToggleCountdown
-    OnDblClick = ResetCountdown
     ParentFont = False
     TabOrder = 1
-    Transparent = False
+    OnClick = ToggleCountdown
+    OnDblClick = ResetCountdown
   end
   object TrayIconMain: TTrayIcon
     BalloonFlags = bfInfo

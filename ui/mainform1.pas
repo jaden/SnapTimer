@@ -12,6 +12,7 @@ uses
 type
   { TMainForm }
   TMainForm = class(TForm)
+    Count: TPanel;
     ImgIconMain: TImage;
     ImgIconRunning: TImage;
     ImgIconPaused: TImage;
@@ -43,7 +44,6 @@ type
     TrayMenu: TPopupMenu;
     TimeLabel: TLabel;
     TimeEdit: TSpinEdit;
-    Count:   TStaticText;
     TrayIconMain: TTrayIcon;
     procedure OnCreateForm(Sender: TObject);
     procedure OnDestroyForm(Sender: TObject);
@@ -72,9 +72,6 @@ type
     procedure PlayTicking();
   private
     MyTimer : TMyTimer;
-    FontSizeChanged : boolean;
-    //FormerWidth : integer;
-    //FormerHeight : integer;
     OnShowFormFirstTime: Boolean;
     procedure ApplyConfig;
   public
@@ -198,43 +195,6 @@ begin
     // ApplyConfig does not set MainForm dimensions and TimeEdit(TSpinEdit)
     TimeEdit.Value:= GetConfig.Minutes;
     MyTimer.Reset; // This will trigger OnTimerStateChanged
-  end;
-
-  // TODO Get this working for window size (getpreferred size gets form, not window)
-  // Get preferred size before font change, then after and add or subtract that delta from the
-  // window size?
-  // AutoSize is working on startup, just not when font size is changed.
-  // Need to find the method that will set the window to the preferred size, because the preferred size is correct
-  // setBounds does it, but it also requires
-  if FontSizeChanged then
-  begin
-  	//AutoSize:= True;
-    //MainForm.FontChanged(Sender);
- 	  //GetPreferredSize(w, h, True);
-    //cRect := GetClientRect;
-    //cRect.Right := w;
-    //cRect.Bottom := h;
-    //AdjustClientRect(cRect);
-
-    // These two lines cause an exception - why I don't know
-    //Count.Width:= w;
-    //Count.Height:= h;
-
-    //InvalidatePreferredSize;
-    //Repaint;
-    //Resize;
-    //AdjustSize;
-
-	  //GetPreferredSize(w, h, True);
-   	//ShowMessageFmt('width: %d, height: %d', [w, h]);
-    //ShowMessageFmt('width: %d, height: %d', [FormerWidth, FormerHeight]);
-    //WndWidth:= WndWidth + (w - FormerWidth);
-    //WndHeight:= WndHeight + (h - FormerHeight);
-    //SetBounds(Monitor.WorkareaRect.Right - w + rightAdjust, 0, w, h);
-    //WndWidth:= w;
-    //WndHeight:= h;
-  	//ShowMessageFmt('width: %d, height: %d', [w, h]);
-    //exit;
   end;
 end;
 
@@ -569,6 +529,7 @@ var
   Config: TConfig;
   WndHandle: HWND;
   flags: Integer;
+  tw, th: Integer;
 begin
   Config:= GetConfig;
   if Config.AlwaysOnTop then
@@ -605,6 +566,13 @@ begin
               Self.Position := poScreenCenter;
          end;
   end;
+
+  Count.Canvas.GetTextSize('00:00:00', tw, th);
+   // TODO add some padding?
+  if tw < 168 then
+    tw:= 168;
+  self.ClientWidth:= tw + 8;
+  self.ClientHeight:= th + 32;
 end;
 
 initialization
