@@ -56,14 +56,14 @@ type
     GeneralTab: TTabSheet;
     AlarmsTab: TTabSheet;
     FontsTab: TTabSheet;
+    function GetFile(Orig: String; FilterStr: String; Dir : String): String;
+    procedure GetAudioFile(Sender: TObject);
+    procedure GetAppFile(Sender: TObject);
     procedure ChooseFont(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure EnableFields(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
-    procedure GetAudioFile(Sender: TObject);
-    procedure GetAppFile(Sender: TObject);
-    function GetFile(Orig: String; FilterStr: String; Dir : String): String;
     procedure SetFontDefaults(Sender: TObject);
     procedure TestAudio(Sender: TObject);
     procedure TestMessage(Sender: TObject);
@@ -87,12 +87,59 @@ uses Controls, MainForm1, Config, Utils;
 
 const
   FONT_PREVIEW_FONT_SIZE = 18;
+{$IFDEF WINDOWS}
+  SEPARATOR = '\';
+{$ENDIF}
+{$IFDEF LINUX}
+  SEPARATOR = '/';
+{$ENDIF}
+
 
 // TODO Move all text strings to the top
 
+function TOptionsForm.GetFile(Orig: String; FilterStr: String; Dir : String): String;
+var
+  dlg : TOpenDialog;
+  fname : String;
+  cwd : String;
+  relPath : String;
+begin
+  dlg := TOpenDialog.Create(nil);
+  dlg.FileName := '';
+  if DirectoryExists(Dir) then
+     dlg.InitialDir := Dir
+  else
+    dlg.InitialDir := GetCurrentDir;
+  dlg.Options := [ofFileMustExist];
+  dlg.Filter := FilterStr;
+  dlg.FilterIndex := 1;
+
+  if dlg.Execute then
+  begin
+    fname := dlg.FileName;
+    cwd := GetCurrentDir + SEPARATOR;
+  	relPath := ExtractRelativePath(cwd, ExtractFilePath(fname));
+    Result := '.' + SEPARATOR + relPath + ExtractFileName(fname);
+  end else begin
+  	Result := Orig;
+  end;
+  dlg.Free;
+end;
+
 procedure TOptionsForm.GetAudioFile(Sender: TObject);
 begin
-  NotifyAudio.Text := GetFile(NotifyAudio.Text, 'Wave files (*.wav)|*.wav', GetCurrentDir + '\sounds');
+  NotifyAudio.Text := GetFile(NotifyAudio.Text, 'Wave files (*.wav)|*.wav', GetCurrentDir + SEPARATOR + 'sounds');
+end;
+
+procedure TOptionsForm.GetAppFile(Sender: TObject);
+begin
+{$IFDEF WINDOWS}
+  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'Executables (*.exe)|*.exe|All files (*.*)|*.*', GetCurrentDir);
+{$ENDIF}
+
+{$IFDEF LINUX}
+  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'All files (*.*)|*.*', GetCurrentDir);
+{$ENDIF}
 end;
 
 procedure TOptionsForm.FormKeyPress(Sender: TObject; var Key: char);
@@ -122,6 +169,7 @@ procedure TOptionsForm.FormCreate(Sender: TObject);
 var Config: TConfig;
     WndPositions: TStrings;
 begin
+  //Application.MessageBox(PChar(String(GetFontData(self.Font.Handle).Name)), '');
   Config:= GetConfig;
 
   PageControl1.TabIndex := 0;
@@ -168,7 +216,6 @@ begin
   FontSize.Value:= Config.Font.Size;
   FontColor.ButtonColor:= Config.Font.Color;
   BgColor.ButtonColor:= Config.Font.BgColor;
-  FontPreview.Caption:= Config.Font.Name + ' : 1234567890';
   FontPreview.Font.Name:= Config.Font.Name;
   //FontPreview.Font.Size:= Config.Font.Size; // size is fixed
   FontPreview.Font.Size:= FONT_PREVIEW_FONT_SIZE;
@@ -176,8 +223,16 @@ begin
   FontPreview.Font.Color:= Config.Font.Color;
   FontPreview.Font.Style:= Config.Font.Style;
   FontPreview.Color:= Config.Font.BgColor;
+  FontPreview.Caption:= Config.Font.Name + ' : 1234567890';
 
   EnableFields(Sender);
+
+{$IFDEF LINUX}
+  // TODO: Not supported yet
+  // Create a thread that will call play command?
+  CheckLoopAudio.Checked:= False;
+  CheckLoopAudio.Enabled:= False;
+{$ENDIF}
 end;
 
 procedure TOptionsForm.FormDestroy(Sender: TObject);
@@ -255,41 +310,6 @@ begin
   FontPreview.Color:=  BgColor.ButtonColor;
 
 end;
-
-procedure TOptionsForm.GetAppFile(Sender: TObject);
-begin
-  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'Executables (*.exe)|*.exe|All files (*.*)|*.*', GetCurrentDir);
-end;
-
-function TOptionsForm.GetFile(Orig: String; FilterStr: String; Dir : String): String;
-var
-  dlg : TOpenDialog;
-  fname : String;
-  cwd : String;
-  relPath : String;
-begin
-  dlg := TOpenDialog.Create(nil);
-  dlg.FileName := '';
-  if DirectoryExists(Dir) then
-     dlg.InitialDir := Dir
-  else
-    dlg.InitialDir := GetCurrentDir;
-  dlg.Options := [ofFileMustExist];
-  dlg.Filter := FilterStr;
-  dlg.FilterIndex := 1;
-
-  if dlg.Execute then
-  begin
-    fname := dlg.FileName;
-    cwd := GetCurrentDir + '\';
-  	relPath := ExtractRelativePath(cwd, ExtractFilePath(fname));
-    Result := '.\' + relPath + ExtractFileName(fname);
-  end else begin
-  	Result := Orig;
-  end;
-  dlg.Free;
-end;
-
 
 
 procedure TOptionsForm.SetFontDefaults(Sender: TObject);

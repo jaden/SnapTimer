@@ -13,7 +13,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SnapTimer'
-  ClientHeight = 222
+  ClientHeight = 219
   ClientWidth = 259
   Constraints.MinHeight = 70
   Constraints.MinWidth = 160
@@ -24,8 +24,7 @@ object MainForm: TMainForm
   OnKeyPress = FormKeyPress
   OnShow = OnShowForm
   OnWindowStateChange = FormWindowStateChange
-  Position = poScreenCenter
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '1.6.0.4'
   object TimeLabel: TLabel
     AnchorSideRight.Control = TimeEdit
     Left = 7
@@ -438,7 +437,7 @@ object MainForm: TMainForm
   object TimeEdit: TSpinEdit
     AnchorSideLeft.Side = asrBottom
     Left = 59
-    Height = 23
+    Height = 27
     Top = 2
     Width = 47
     BorderSpacing.Right = 5
@@ -451,7 +450,7 @@ object MainForm: TMainForm
   object Count: TPanel
     Cursor = crHandPoint
     Left = 2
-    Height = 190
+    Height = 187
     Top = 32
     Width = 255
     Align = alBottom
@@ -515,12 +514,12 @@ object MainForm: TMainForm
     }
     Visible = True
     OnClick = TrayIconMainClick
-    Left = 112
-    Top = 160
+    left = 112
+    top = 160
   end
   object MainMenu1: TMainMenu
-    Left = 24
-    Top = 104
+    left = 24
+    top = 104
     object MenuFile: TMenuItem
       Caption = 'File'
       object MenuToggle: TMenuItem
@@ -561,8 +560,8 @@ object MainForm: TMainForm
     end
   end
   object TrayMenu: TPopupMenu
-    Left = 24
-    Top = 160
+    left = 24
+    top = 160
     object MenuCount: TMenuItem
       Caption = 'Countdown'
       Enabled = False
@@ -600,8 +599,8 @@ object MainForm: TMainForm
     end
   end
   object PopupMenuCompact: TPopupMenu
-    Left = 128
-    Top = 104
+    left = 128
+    top = 104
     object MenuCompact: TMenuItem
       Caption = 'Toggle compact mode'
       OnClick = ToggleCompact

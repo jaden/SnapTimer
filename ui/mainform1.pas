@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, Windows, DateUtils,
+  Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, Options, DateUtils,
   MyTimer;
 
 type
@@ -336,6 +336,8 @@ begin
         ToggleCountdown(Sender)
       else
         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
+
+      Show;
     end;
   end;
 end;
@@ -387,7 +389,7 @@ procedure TMainForm.ShowOptions(Sender: TObject);
 var
   Config: TConfig;
   Ok: Boolean;
-  r: TRect;
+  r : TRect;
 begin
   OptionsForm := TOptionsForm.Create(Self);
   Ok:= OptionsForm.ShowModal = mrOk;
@@ -396,11 +398,11 @@ begin
   if Ok then
   begin
     Config:= GetConfig;
-    GetWindowRect(MainForm.Handle, r);
+    r:= TUtils.GetFormRect(self);
     Config.WndLeft:= r.Left;
     Config.WndTop:= r.Top;
-    Config.WndWidth:= r.Right - r. Left;
-    Config.WndHeight:= r.Bottom - r.Top;
+    Config.WndWidth:= r.Width;
+    Config.WndHeight:= r.Height;
     ApplyConfig;
 
     //if not (Count.Font.Size = f.Size) then
@@ -412,7 +414,6 @@ begin
     //Count.Font  := f;
     // TODO Get font colors and background color to be shown - what's up?
 
-    //if FontSizeChanged then OnShowForm(Sender);
     if MyTimer.State = TState.Running then
     begin
       if Config.TickingOn then
@@ -423,9 +424,6 @@ begin
 
     if Config.AutoSave then
       SaveSettings(Sender);
-    // TODO Resize the window if necessary to accomodate larger text
-    // Get the text size from the font for '00:00:00'?
-
   end;
 end;
 
@@ -449,9 +447,9 @@ begin
 
   // These config values are not set in OptionsForm.
   Config.Minutes:= TimeEdit.Value;
-  GetWindowRect(self.Handle, wRect);
-  Config.WndWidth:= wRect.Right - wRect.Left;
-  Config.WndHeight:= wRect.Bottom - wRect.Top;
+  wRect:= TUtils.GetFormRect(self);
+  Config.WndWidth:= wRect.Width;
+  Config.WndHeight:= wRect.Height;
   Config.WndLeft:= wRect.Left;
   Config.WndTop:= wRect.Top;
 
@@ -527,8 +525,6 @@ end;
 procedure TMainForm.ApplyConfig;
 var
   Config: TConfig;
-  WndHandle: HWND;
-  flags: Integer;
   tw, th: Integer;
 begin
   Config:= GetConfig;
@@ -550,29 +546,29 @@ begin
   Count.Font.Style := Config.Font.Style;
   Count.Color := Config.Font.BgColor;
 
-  WndHandle:= self.Handle;
-  Self.Position := poDesigned;
-  flags:= SWP_SHOWWINDOW;
-  case Config.WndPosition of
-       Remember: SetWindowPos(WndHandle, HWND_TOP, Config.WndLeft, Config.WndTop, Config.WndWidth, Config.WndHeight, flags);
-       TopLeft: SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, flags);
-       TopRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth, 0, Config.WndWidth, Config.WndHeight, flags);
-       BottomLeft: SetWindowPos(WndHandle, HWND_TOP, 0, Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
-       BottomRight: SetWindowPos(WndHandle, HWND_TOP, Monitor.WorkareaRect.Right - Config.WndWidth,
-                    Monitor.WorkareaRect.Bottom - Config.WndHeight, Config.WndWidth, Config.WndHeight, flags);
-       Center:
-         begin
-              SetWindowPos(WndHandle, HWND_TOP, 0, 0, Config.WndWidth, Config.WndHeight, SWP_SHOWWINDOW or SWP_NOMOVE);
-              Self.Position := poScreenCenter;
-         end;
-  end;
 
   Count.Canvas.GetTextSize('00:00:00', tw, th);
-   // TODO add some padding?
   if tw < 168 then
     tw:= 168;
   self.ClientWidth:= tw + 8;
   self.ClientHeight:= th + 32;
+
+  self.Position:= poDesigned;
+  case Config.WndPosition of
+    Remember: TUtils.SetFormPos(self, Config.WndLeft, Config.WndTop);
+    TopLeft: TUtils.SetFormPos(self, 0, 0);
+    TopRight: TUtils.SetFormPos(self, Monitor.WorkareaRect.Right - Width, 0);
+    BottomLeft: TUtils.SetFormPos(self, 0, Monitor.WorkareaRect.Bottom - Height);
+    BottomRight: TUtils.SetFormPos(self, Monitor.WorkareaRect.Right - Width, Monitor.WorkareaRect.Bottom - Height);
+    Center:
+    begin
+      Self.Position := poScreenCenter;
+      // After the main form was centered, we want to be able to position it and we
+      // don't want minimize/restore action to center it again.
+      Self.Position := poDesigned;
+    end;
+  end;
+
 end;
 
 initialization
