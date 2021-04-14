@@ -74,6 +74,7 @@ type
     MyTimer : TMyTimer;
     OnShowFormFirstTime: Boolean;
     procedure ApplyConfig;
+    procedure ShowForm;
   public
     { public declarations }
   end;
@@ -245,11 +246,7 @@ begin
     Application.Minimize;
   end
   else if WindowState = wsMinimized then
-  begin
-    // Setting WindowState to wsNormal does not call FormOnWindowStateChange
-    WindowState:= wsNormal;
-    FormWindowStateChange(Sender);
-  end;
+    ShowForm;
 end;
 
 
@@ -337,9 +334,7 @@ begin
       else
         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
 
-      // Show; this does not work  well
-      WindowState:= wsNormal;
-      FormWindowStateChange(Sender);
+      ShowForm;
     end;
   end;
 end;
@@ -571,6 +566,21 @@ begin
     end;
   end;
 
+end;
+
+procedure TMainForm.ShowForm;
+begin
+  // Not sure why this behaviour is different.
+
+{$IFDEF WINDOWS}
+   // Setting WindowState to wsNormal does not call FormOnWindowStateChange
+   WindowState:= wsNormal;
+   FormWindowStateChange(nil);
+{$ENDIF}
+
+{$IFDEF LINUX}
+  Show;
+{$ENDIF}
 end;
 
 initialization
