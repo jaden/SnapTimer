@@ -337,7 +337,9 @@ begin
       else
         TrayIconMain.Icon := ImgIconDone.Picture.Icon;
 
-      Show;
+      // Show; this does not work  well
+      WindowState:= wsNormal;
+      FormWindowStateChange(Sender);
     end;
   end;
 end;
