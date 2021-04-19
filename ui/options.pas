@@ -56,14 +56,15 @@ type
     GeneralTab: TTabSheet;
     AlarmsTab: TTabSheet;
     FontsTab: TTabSheet;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
+
     function GetFile(Orig: String; FilterStr: String; Dir : String): String;
     procedure GetAudioFile(Sender: TObject);
     procedure GetAppFile(Sender: TObject);
     procedure ChooseFont(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure EnableFields(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure SetFontDefaults(Sender: TObject);
     procedure TestAudio(Sender: TObject);
     procedure TestMessage(Sender: TObject);
@@ -95,75 +96,6 @@ const
 {$ENDIF}
 
 
-// TODO Move all text strings to the top
-
-function TOptionsForm.GetFile(Orig: String; FilterStr: String; Dir : String): String;
-var
-  dlg : TOpenDialog;
-  fname : String;
-  cwd : String;
-  relPath : String;
-begin
-  dlg := TOpenDialog.Create(nil);
-  dlg.FileName := '';
-  if DirectoryExists(Dir) then
-     dlg.InitialDir := Dir
-  else
-    dlg.InitialDir := GetCurrentDir;
-  dlg.Options := [ofFileMustExist];
-  dlg.Filter := FilterStr;
-  dlg.FilterIndex := 1;
-
-  if dlg.Execute then
-  begin
-    fname := dlg.FileName;
-    cwd := GetCurrentDir + SEPARATOR;
-  	relPath := ExtractRelativePath(cwd, ExtractFilePath(fname));
-    Result := '.' + SEPARATOR + relPath + ExtractFileName(fname);
-  end else begin
-  	Result := Orig;
-  end;
-  dlg.Free;
-end;
-
-procedure TOptionsForm.GetAudioFile(Sender: TObject);
-begin
-  NotifyAudio.Text := GetFile(NotifyAudio.Text, 'Wave files (*.wav)|*.wav', GetCurrentDir + SEPARATOR + 'sounds');
-end;
-
-procedure TOptionsForm.GetAppFile(Sender: TObject);
-begin
-{$IFDEF WINDOWS}
-  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'Executables (*.exe)|*.exe|All files (*.*)|*.*', GetCurrentDir);
-{$ENDIF}
-
-{$IFDEF LINUX}
-  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'All files (*.*)|*.*', GetCurrentDir);
-{$ENDIF}
-end;
-
-procedure TOptionsForm.FormKeyPress(Sender: TObject; var Key: char);
-begin
-  if key = #27 then Close;
-end;
-
-procedure TOptionsForm.ChooseFont(Sender: TObject);
-var
-  dlg : TFontDialog;
-begin
-  dlg := TFontDialog.Create(nil);
-  dlg.Font:= FontPreview.Font;
-  dlg.Font.Size:= FontSize.Value;
-  if dlg.Execute then
-  begin
-    FontSize.Value:= Dlg.Font.Size;
-    FontColor.ButtonColor:= Dlg.Font.Color;
-    FontPreview.Caption:= Dlg.Font.Name + ' : 1234567890';
-    FontPreview.Font:= Dlg.Font;
-    FontPreview.Font.Size:= FONT_PREVIEW_FONT_SIZE;
-  end;
-  dlg.Free;
-end;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 var Config: TConfig;
@@ -232,6 +164,8 @@ begin
   // Create a thread that will call play command?
   CheckLoopAudio.Checked:= False;
   CheckLoopAudio.Enabled:= False;
+  CheckTicking.Checked:= False;
+  CheckTicking.Enabled:= False;
 {$ENDIF}
 end;
 
@@ -277,6 +211,79 @@ begin
     Config.Font.Style:= FontPreview.Font.Style;
   end;
 end;
+
+procedure TOptionsForm.FormKeyPress(Sender: TObject; var Key: char);
+begin
+  if key = #27 then Close;
+end;
+
+// TODO Move all text strings to the top
+
+function TOptionsForm.GetFile(Orig: String; FilterStr: String; Dir : String): String;
+var
+  dlg : TOpenDialog;
+  fname : String;
+  cwd : String;
+  relPath : String;
+begin
+  dlg := TOpenDialog.Create(nil);
+  dlg.FileName := '';
+  if DirectoryExists(Dir) then
+     dlg.InitialDir := Dir
+  else
+    dlg.InitialDir := GetCurrentDir;
+  dlg.Options := [ofFileMustExist];
+  dlg.Filter := FilterStr;
+  dlg.FilterIndex := 1;
+
+  if dlg.Execute then
+  begin
+    fname := dlg.FileName;
+    cwd := GetCurrentDir + SEPARATOR;
+  	relPath := ExtractRelativePath(cwd, ExtractFilePath(fname));
+    Result := '.' + SEPARATOR + relPath + ExtractFileName(fname);
+  end else begin
+  	Result := Orig;
+  end;
+  dlg.Free;
+end;
+
+procedure TOptionsForm.GetAudioFile(Sender: TObject);
+begin
+  NotifyAudio.Text := GetFile(NotifyAudio.Text, 'Wave files (*.wav)|*.wav', GetCurrentDir + SEPARATOR + 'sounds');
+end;
+
+procedure TOptionsForm.GetAppFile(Sender: TObject);
+begin
+{$IFDEF WINDOWS}
+  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'Executables (*.exe)|*.exe|All files (*.*)|*.*', GetCurrentDir);
+{$ENDIF}
+
+{$IFDEF LINUX}
+  NotifyRunApp.Text := GetFile(NotifyRunApp.Text, 'All files (*.*)|*.*', GetCurrentDir);
+{$ENDIF}
+end;
+
+
+procedure TOptionsForm.ChooseFont(Sender: TObject);
+var
+  dlg : TFontDialog;
+begin
+  dlg := TFontDialog.Create(nil);
+  dlg.Font:= FontPreview.Font;
+  dlg.Font.Size:= FontSize.Value;
+  if dlg.Execute then
+  begin
+    FontSize.Value:= Dlg.Font.Size;
+    FontColor.ButtonColor:= Dlg.Font.Color;
+    FontPreview.Caption:= Dlg.Font.Name + ' : 1234567890';
+    FontPreview.Font:= Dlg.Font;
+    FontPreview.Font.Size:= FONT_PREVIEW_FONT_SIZE;
+  end;
+  dlg.Free;
+end;
+
+
 
 procedure TOptionsForm.EnableFields(Sender: TObject);
 begin
