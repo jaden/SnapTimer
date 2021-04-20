@@ -39,16 +39,7 @@ function GetMainController : TMainController;
 
 implementation
 
-uses Forms, MainForm1, CompactMode, Utils, Config, MsgBox;
-
-const
-  APP_NAME = 'SnapTimer';
-
-  // TODO this is a duplicate
-  // Buttons
-  BTN_START = '&Start';
-  BTN_PAUSE = '&Pause';
-  BTN_RESET = '&Reset';
+uses Forms, MainForm1, CompactMode, Utils, Config, MsgBox, Consts;
 
 var
   MainControllerInstance : TMainController;

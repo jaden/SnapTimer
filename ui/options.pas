@@ -84,19 +84,11 @@ var
 
 implementation
 
-uses Controls, MainForm1, Config, Utils, MainController;
+uses Controls, MainForm1, Config, Utils, MainController, Consts;
 { TOptionsForm }
 
 const
   FONT_PREVIEW_FONT_SIZE = 18;
-{$IFDEF WINDOWS}
-  SEPARATOR = '\';
-{$ENDIF}
-{$IFDEF LINUX}
-  SEPARATOR = '/';
-{$ENDIF}
-
-
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 var Config: TConfig;
