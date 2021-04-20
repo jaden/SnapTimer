@@ -76,7 +76,7 @@ type
     property TickingOn: boolean read FTickingOn write FTickingOn;
     property AutoSave: boolean read FAutoSave write FAutoSave;
     property SecondsMode: boolean read FSecondsMode write FSecondsMode; // Undocumented mode to treat minutes as seconds
-    property CompactMode: boolean read FCompactMode write FCompactMode; // not implemented
+    property CompactMode: boolean read FCompactMode write FCompactMode;
     // Placement
     property WndHeight: integer read FWndHeight write FWndHeight;
     property WndWidth: integer read FWndWidth write FWndWidth;
@@ -134,6 +134,7 @@ const
  INI_DONE_APP = 'RunApp';
  INI_DONE_APP_ON = 'RunAppEnabled';
  INI_SECONDS_MODE = 'SecondsMode';
+ INI_COMPACT_MODE = 'CompactMode';
  INI_FONT_NAME = 'Name';
  INI_FONT_CHARSET = 'Charset';
  INI_FONT_COLOR = 'Color';
@@ -163,6 +164,7 @@ const
  DEF_TICKING_PATH = '.\sounds\ticking\ticking.wav';
  DEF_AUTOSAVE  = True;
  DEF_SECONDS_MODE = False;
+ DEF_COMPACT_MODE = False;
  DEF_POSITION  = Ord(Center);
  DEF_HEIGHT    = 149;
  DEF_WIDTH     = 214;
@@ -287,6 +289,7 @@ begin
     TickingOn := IniFile.ReadBool(INI_SEC_MAIN, INI_TICKING_ON, DEF_TICKING_ON);
     AutoSave := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSAVE, DEF_AUTOSAVE);
     SecondsMode := IniFile.ReadBool(INI_SEC_MAIN, INI_SECONDS_MODE, DEF_SECONDS_MODE);
+    CompactMode := IniFile.ReadBool(INI_SEC_MAIN, INI_COMPACT_MODE, DEF_COMPACT_MODE);
     // Placement
     WndHeight := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_HEIGHT, DEF_HEIGHT);
     WndWidth := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_WIDTH, DEF_WIDTH);
@@ -337,6 +340,7 @@ begin
     IniFile.WriteBool(INI_SEC_MAIN, INI_TICKING_ON, TickingOn);
     IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSAVE, AutoSave);
     IniFile.WriteBool(INI_SEC_MAIN, INI_SECONDS_MODE, SecondsMode);
+    IniFile.WriteBool(INI_SEC_MAIN, INI_COMPACT_MODE, CompactMode);
     // Placement
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_HEIGHT, WndHeight);
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_WIDTH, WndWidth);

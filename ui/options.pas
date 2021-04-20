@@ -16,6 +16,7 @@ type
     BtnCancel: TButton;
     BtnDefaults: TButton;
     CheckAutoRestart: TCheckBox;
+    CheckCompactMode: TCheckBox;
     CheckHideSeconds: TCheckBox;
     CheckSecondsMode: TCheckBox;
     CheckAutoSave: TCheckBox;
@@ -83,7 +84,7 @@ var
 
 implementation
 
-uses Controls, MainForm1, Config, Utils;
+uses Controls, MainForm1, Config, Utils, MainController;
 { TOptionsForm }
 
 const
@@ -119,17 +120,16 @@ begin
 
   CheckAlwaysOnTop.Checked:= Config.AlwaysOnTop;
   CheckMinToTray.Checked:= Config.MinToTray;
-  CheckAutoSave.Checked:= Config.AutoSave;
-
-  CheckHideSeconds.Checked:= Config.HideSeconds;
   CheckAutostart.Checked:= Config.AutoStart;
+  CheckHideSeconds.Checked:= Config.HideSeconds;
   CheckClicktime.Checked:= Config.ClickTime;
   CheckDblClickTime.Checked:= Config.DblClickTime;
-
-  CheckSecondsMode.Checked:= Config.SecondsMode;
   CheckAutoRestart.Checked:= Config.AutoRestart;
   CheckLoopAudio.Checked:= Config.LoopAudio;
   CheckTicking.Checked:= Config.TickingOn;
+  CheckAutoSave.Checked:= Config.AutoSave;
+  CheckSecondsMode.Checked:= Config.SecondsMode;
+  CheckCompactMode.Checked:= Config.CompactMode;
 
   // Alarms
   NotifyMsg.Text:= Config.DoneMessage;
@@ -188,6 +188,7 @@ begin
     Config.TickingOn:= CheckTicking.Checked;
     Config.AutoSave:= CheckAutoSave.Checked;
     Config.SecondsMode:= CheckSecondsMode.Checked;
+    Config.CompactMode:= CheckCompactMode.Checked;
 
     // Placement
     Config.WndPosition:= TPosition(PositionCombo.ItemIndex);
@@ -345,20 +346,17 @@ end;
 
 procedure TOptionsForm.TestMessage(Sender: TObject);
 begin
-with Self.Owner as TMainForm do
-  ShowDoneMessage(NotifyMsg.Text);
+  GetMainController.ShowDoneMessage(NotifyMsg.Text);
 end;
 
 procedure TOptionsForm.TestRunApp(Sender: TObject);
 begin
-  with Self.Owner as TMainForm do
-    TUtils.RunApp(NotifyRunApp.Text);
+  TUtils.RunApp(NotifyRunApp.Text);
 end;
 
 procedure TOptionsForm.TestTrayMsg(Sender: TObject);
 begin
-  with Self.Owner as TMainForm do
-    ShowTrayMessage(NotifyTrayMsg.Text);
+  GetMainController.ShowTrayMessage(NotifyTrayMsg.Text);
 end;
 
 initialization

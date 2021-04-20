@@ -5,7 +5,7 @@ unit utils;
 
 interface
 
-Uses Forms, Types;
+Uses Forms, Types, Controls;
 
 
 // https://forum.lazarus.freepascal.org/index.php/topic,29450.msg186002.html?PHPSESSID=0l7k7l8bgpqdvcqcqetk17rt04#msg186002
@@ -29,7 +29,8 @@ type
     class procedure RunApp(Path: string);
     class function IsInteger(S: String): boolean;
     class function GetFormRect(Form: TForm) : TRect;
-    class procedure SetFormPos(Form: TForm; X: Integer; Y: Integer);
+    class procedure SetControlPos(Control: TWinControl; X: Integer; Y: Integer);
+    class function GetControlPos(Control: TWinControl) : TPoint;
     class procedure PlayAudio(Path: string; Loop: boolean);
     class procedure StopAudio;
   end;
@@ -153,21 +154,43 @@ begin
 {$ENDIF}
 end;
 
-class procedure TUtils.SetFormPos(Form: TForm; X: Integer; Y: Integer);
+class procedure TUtils.SetControlPos(Control: TWinControl; X: Integer; Y: Integer);
 begin
 {$IFDEF WINDOWS}
   // It seems that there is no difference.
-  //SetWindowPos(Form.Handle, HWND_TOP, X, Y, 0, 0, SWP_SHOWWINDOW or SWP_NOSIZE);
-  Form.Left:= X;
-  Form.Top:= Y;
+  //SetWindowPos(Control.Handle, HWND_TOP, X, Y, 0, 0, SWP_SHOWWINDOW or SWP_NOSIZE);
+  Control.Left:= X;
+  Control.Top:= Y;
 {$ENDIF}
 
 {$IFDEF LINUX}
-  Form.Left:= X;
-  Form.Top:= Y;
+  Control.Left:= X;
+  Control.Top:= Y;
 {$ENDIF}
 end;
 
+class function TUtils.GetControlPos(Control: TWinControl) : TPoint;
+var r : TRect;
+    p : TPoint;
+begin
+{$IFDEF WINDOWS}
+  GetWindowRect(Control.Handle, r);
+  Result.X:= r.Left;
+  Result.Y:= r.Top;
+
+  // Slightly different results
+  //p.X:= Control.Left;
+  //p.Y:= Control.Top;
+  //Result:= Control.ClientToScreen(p);
+{$ENDIF}
+
+{$IFDEF LINUX}
+  // TODO test
+  //p.X:= Control.Left;
+  //p.Y:= Control.Top;
+  //Result:= Control.ClientToScreen(p);
+{$ENDIF}
+end;
 
 // https://wiki.freepascal.org/Play_Sound_Multiplatform
 // Modified

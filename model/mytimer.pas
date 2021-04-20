@@ -1,4 +1,4 @@
-unit mytimer;
+unit MyTimer;
 
 {$mode objfpc}
 
