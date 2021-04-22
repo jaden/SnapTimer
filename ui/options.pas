@@ -5,7 +5,8 @@ unit Options;
 interface
 
 uses
-  SysUtils, LResources, Forms, Graphics, Dialogs, StdCtrls, ComCtrls, Spin, Classes;
+  SysUtils, LResources, Forms, Graphics, Dialogs, StdCtrls, ComCtrls, Spin,
+  ExtCtrls, Classes;
 
 type
 
@@ -33,8 +34,14 @@ type
     FontSize: TSpinEdit;
     Label1: TLabel;
     FontPreview: TStaticText;
+    AlphaLabel: TLabel;
     LabelTextColor: TLabel;
     LabelTextColor1: TLabel;
+    RadioTrNone: TRadioButton;
+    RadioTrBackground: TRadioButton;
+    RadioTrAlphaBlending: TRadioButton;
+    TransparencyRadioGroup: TRadioGroup;
+    TabSheet1: TTabSheet;
     TimerFontBox: TGroupBox;
     PositionCombo: TComboBox;
     GroupBox1: TGroupBox;
@@ -57,6 +64,7 @@ type
     GeneralTab: TTabSheet;
     AlarmsTab: TTabSheet;
     FontsTab: TTabSheet;
+    AlphaValueTrackBar: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
@@ -121,7 +129,6 @@ begin
   CheckTicking.Checked:= Config.TickingOn;
   CheckAutoSave.Checked:= Config.AutoSave;
   CheckSecondsMode.Checked:= Config.SecondsMode;
-  CheckCompactMode.Checked:= Config.CompactMode;
 
   // Alarms
   NotifyMsg.Text:= Config.DoneMessage;
@@ -149,17 +156,25 @@ begin
   FontPreview.Color:= Config.Font.BgColor;
   FontPreview.Caption:= Config.Font.Name + ' : 1234567890';
 
+  // Compact Mode
+  CheckCompactMode.Checked:= Config.CompactMode.Enabled;
+  case Config.CompactMode.Transparency of
+    None: RadioTrNone.Checked:= True;
+    TransparentBackground: RadioTrBackground.Checked:= True;
+    AlphaBlending: RadioTrAlphaBlending.Checked:= True;
+  end;
+  AlphaValueTrackBar.Position:= Config.CompactMode.AlphaValue;
   EnableFields(Sender);
 
 {$IFDEF LINUX}
   // TODO: Not supported yet
   // Create a thread that will call play command?
-  CheckLoopAudio.Checked:= False;
   CheckLoopAudio.Enabled:= False;
-  CheckTicking.Checked:= False;
   CheckTicking.Enabled:= False;
+  RadioTrBackground.Enabled:= False;
 {$ENDIF}
 end;
+
 
 procedure TOptionsForm.FormDestroy(Sender: TObject);
 var Config : TConfig;
@@ -180,7 +195,6 @@ begin
     Config.TickingOn:= CheckTicking.Checked;
     Config.AutoSave:= CheckAutoSave.Checked;
     Config.SecondsMode:= CheckSecondsMode.Checked;
-    Config.CompactMode:= CheckCompactMode.Checked;
 
     // Placement
     Config.WndPosition:= TPosition(PositionCombo.ItemIndex);
@@ -202,6 +216,16 @@ begin
     Config.Font.BgColor:= FontPreview.Color;
     Config.Font.Size:= FontSize.Value; // FontPreview has fixed size
     Config.Font.Style:= FontPreview.Font.Style;
+
+    // Compact Mode
+    Config.CompactMode.Enabled:= CheckCompactMode.Checked;
+    if RadioTrNone.Checked then
+      Config.CompactMode.Transparency:= None
+    else if RadioTrBackground.Checked then
+      Config.CompactMode.Transparency:= TransparentBackground
+    else if  RadioTrAlphaBlending.Checked then
+      Config.CompactMode.Transparency:= AlphaBlending;
+    Config.CompactMode.AlphaValue:= AlphaValueTrackBar.Position;
   end;
 end;
 
@@ -292,6 +316,10 @@ begin
   NotifyRunApp.Enabled := NotifyRunAppOn.Checked;
   NotifyRunBtn.Enabled := NotifyRunAppOn.Checked;
   NotifyRunTest.Enabled := NotifyRunAppOn.Checked;
+
+  TransparencyRadioGroup.Enabled:= CheckCompactMode.Checked;
+  AlphaLabel.Enabled:= CheckCompactMode.Checked And RadioTrAlphaBlending.Checked;
+  AlphaValueTrackBar.Enabled:= CheckCompactMode.Checked And RadioTrAlphaBlending.Checked;
 end;
 
 

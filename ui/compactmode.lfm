@@ -9,6 +9,7 @@ object CompactModeForm: TCompactModeForm
   FormStyle = fsSystemStayOnTop
   LCLVersion = '2.0.10.0'
   object Count: TPanel
+    Cursor = crHandPoint
     Left = 0
     Height = 207
     Top = 0

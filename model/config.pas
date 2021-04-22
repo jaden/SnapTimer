@@ -7,16 +7,44 @@ interface
 uses
   Classes, SysUtils, Graphics;
 
-type
-  TPosition = (Center, Remember, TopLeft, TopRight, BottomLeft, BottomRight);
+const
+ COMPACT_MODE_ALPHA_MIN = 10;
 
-  TFontConfig = class
+type
+  TPosition = (
+    Center,
+    Remember,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+    // Aliases
+    _TPositionFirst = Center,
+    _TPositionLast = BottomRight
+    );
+
+  TCompactModeTransparency = (
+    None,
+    TransparentBackground,
+    AlphaBlending,
+    // Aliases
+    _TCompactModeTransparencyFirst = None,
+    _TCompactTransparencyLast = AlphaBlending
+  );
+
+   TFontConfig = class
     Name: String;
     Charset: Integer;
     Color: Integer;
     BgColor: Integer;
     Size: Integer;
     Style: TFontStyles;
+  end;
+
+  TCompactModeConfig = class
+    Enabled:  Boolean;
+    Transparency: TCompactModeTransparency;
+    AlphaValue: Byte;
   end;
 
   TConfig = class
@@ -34,7 +62,6 @@ type
     FTickingOn: boolean;
     FAutoSave: boolean;
     FSecondsMode: boolean;
-    FCompactMode: boolean;
     // Placement
     FWndHeight: integer;
     FWndWidth: integer;
@@ -53,7 +80,10 @@ type
     // Font
     FFont: TFontConfig;
     FDefaultFont: TFontConfig;
+    // Compact Mode
+    FCompactMode: TCompactModeConfig;
 
+    procedure SetWndPosition(Value: TPosition);
     procedure SetDoneMessage(Msg: String);
     procedure SetDoneTrayMessage(Msg: String);
   public
@@ -76,13 +106,12 @@ type
     property TickingOn: boolean read FTickingOn write FTickingOn;
     property AutoSave: boolean read FAutoSave write FAutoSave;
     property SecondsMode: boolean read FSecondsMode write FSecondsMode; // Undocumented mode to treat minutes as seconds
-    property CompactMode: boolean read FCompactMode write FCompactMode;
     // Placement
     property WndHeight: integer read FWndHeight write FWndHeight;
     property WndWidth: integer read FWndWidth write FWndWidth;
     property WndLeft: integer read FWndLeft write FWndLeft;
     property WndTop: integer read FWndTop write FWndTop;
-    property WndPosition: TPosition read FWndPosition write FWndPosition;
+    property WndPosition: TPosition read FWndPosition write SetWndPosition;
     // Alarm
     property DoneMessage: string read FDoneMessage write SetDoneMessage;
     property DoneMessageEnabled: boolean read FDoneMessageEnabled write FDoneMessageEnabled;
@@ -94,6 +123,8 @@ type
     property DoneAppEnabled: boolean read FDoneAppEnabled write FDoneAppEnabled;
     // Fonts
     property Font: TFontConfig read FFont write FFont;
+    // Compact Mode
+    property CompactMode: TCompactModeConfig read FCompactMode write FCompactMode;
 end;
 
 function GetConfig : TConfig;
@@ -109,6 +140,7 @@ const
  INI_SEC_ALARMS = 'Alarms';
  INI_SEC_PLACEMENT = 'Placement';
  INI_SEC_FONTS = 'Fonts';
+ INI_SEC_COMPACT_MODE = 'CompactMode';
  INI_MINUTES  = 'Minutes';
  INI_ALWAYS_ON_TOP = 'AlwaysOnTop';
  INI_MIN_TO_TRAY = 'MinToTray';
@@ -134,13 +166,15 @@ const
  INI_DONE_APP = 'RunApp';
  INI_DONE_APP_ON = 'RunAppEnabled';
  INI_SECONDS_MODE = 'SecondsMode';
- INI_COMPACT_MODE = 'CompactMode';
  INI_FONT_NAME = 'Name';
  INI_FONT_CHARSET = 'Charset';
  INI_FONT_COLOR = 'Color';
  INI_FONT_SIZE = 'Size';
  INI_FONT_STYLE = 'Style';
  INI_BG_COLOR = 'BgColor';
+ INI_COMPACT_MODE_ENABLED = 'Enabled';
+ INI_COMPACT_MODE_TRANSPARENCY = 'Transparency';
+ INI_COMPACT_MODE_ALPHA_VALUE = 'AlphaValue';
 
  INI_FILE_NAME = 'SnapTimer.ini';
  DEF_TIME      = 15;
@@ -164,7 +198,6 @@ const
  DEF_TICKING_PATH = '.\sounds\ticking\ticking.wav';
  DEF_AUTOSAVE  = True;
  DEF_SECONDS_MODE = False;
- DEF_COMPACT_MODE = False;
  DEF_POSITION  = Ord(Center);
  DEF_HEIGHT    = 149;
  DEF_WIDTH     = 214;
@@ -174,6 +207,9 @@ const
  DEF_FONT_BG_COLOR = clNone;
  DEF_FONT_SIZE = 38;
  DEF_FONT_STYLE = 0;
+ DEF_COMPACT_MODE = False;
+ DEF_COMPACT_MODE_TRANSPARENCY = TCompactModeTransparency.None;
+ DEF_COMPACT_MODE_ALPHA = 128;
 
  var
    ConfigInstance : TConfig;
@@ -218,6 +254,17 @@ begin
 end;
 
 
+procedure TConfig.SetWndPosition(Value: TPosition);
+begin
+  if Value < _TPositionFirst then
+    Value:= _TPositionFirst;
+
+  if Value > _TPositionLast then
+    Value:= _TPositionLast;
+
+  FWndPosition:= Value;
+end;
+
 constructor TConfig.Create;
 begin
   // Main
@@ -233,7 +280,6 @@ begin
   TickingOn:= DEF_TICKING_ON;
   AutoSave:= DEF_AUTOSAVE;
   SecondsMode:= DEF_SECONDS_MODE;
-  CompactMode := False;
   // Placement
   WndPosition:= TPosition(DEF_POSITION);
   WndWidth:= DEF_WIDTH;
@@ -255,6 +301,11 @@ begin
   Font.BgColor:= DEF_FONT_BG_COLOR;
   Font.Size:= DEF_FONT_SIZE;
   Font.Style:= IntToFontStyles(DEF_FONT_STYLE);
+  // CompactMode
+  CompactMode := TCompactModeConfig.Create;
+  CompactMode.Enabled:= DEF_COMPACT_MODE;
+  CompactMode.Transparency:= DEF_COMPACT_MODE_TRANSPARENCY;
+  CompactMode.AlphaValue:= DEF_COMPACT_MODE_ALPHA;
 
   FDefaultFont:= TFontConfig.Create;
   FDefaultFont.Name:= DEF_FONT_NAME;
@@ -269,6 +320,15 @@ destructor TConfig.Free;
 begin
   FFont.Free;
   FDefaultFont.Free;
+end;
+
+function ReadInt(InIfile: TIniFile; const Section, Ident: String;  Min, Max, Default: Integer) : Integer;
+begin
+  Result:= IniFile.ReadInteger(Section, Ident, Default);
+  if Result < Min then
+    Result:= Min;
+  if Result > Max then
+    Result:= Max;
 end;
 
 function TConfig.Load : Boolean;
@@ -289,13 +349,12 @@ begin
     TickingOn := IniFile.ReadBool(INI_SEC_MAIN, INI_TICKING_ON, DEF_TICKING_ON);
     AutoSave := IniFile.ReadBool(INI_SEC_MAIN, INI_AUTOSAVE, DEF_AUTOSAVE);
     SecondsMode := IniFile.ReadBool(INI_SEC_MAIN, INI_SECONDS_MODE, DEF_SECONDS_MODE);
-    CompactMode := IniFile.ReadBool(INI_SEC_MAIN, INI_COMPACT_MODE, DEF_COMPACT_MODE);
     // Placement
     WndHeight := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_HEIGHT, DEF_HEIGHT);
     WndWidth := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_WIDTH, DEF_WIDTH);
     WndLeft := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_LEFT, 0);
     WndTop := IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_TOP, 0);
-    WndPosition := TPosition(IniFile.ReadInteger(INI_SEC_PLACEMENT, INI_POSITION, DEF_POSITION));
+    WndPosition := TPosition(ReadInt(IniFile, INI_SEC_PLACEMENT, INI_POSITION, Ord(_TPositionFirst), Ord(_TPositionLast), DEF_POSITION));
     // Alarm
     DoneMessage := IniFile.ReadString(INI_SEC_ALARMS, INI_DONE_MESSAGE, DEF_DONE_MSG);
     DoneMessageEnabled := IniFile.ReadBool(INI_SEC_ALARMS, INI_DONE_MESSAGE_ON, DEF_DONE_MSG_ON);
@@ -312,6 +371,11 @@ begin
     Font.BgColor := IniFile.ReadInteger(INI_SEC_FONTS, INI_BG_COLOR, DEF_FONT_BG_COLOR);
     Font.Size := IniFile.ReadInteger(INI_SEC_FONTS, INI_FONT_SIZE, DEF_FONT_SIZE);
     Font.Style := IntToFontStyles(IniFile.ReadInteger(INI_SEC_FONTS, INI_FONT_STYLE, DEF_FONT_STYLE));
+    // CompactMode
+    CompactMode.Enabled := IniFile.ReadBool(INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_ENABLED, DEF_COMPACT_MODE);
+    CompactMode.Transparency:= TCompactModeTransparency(ReadInt(IniFile, INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_TRANSPARENCY,
+      Ord(_TCompactModeTransparencyFirst), Ord(_TCompactTransparencyLast), Ord(DEF_COMPACT_MODE_TRANSPARENCY)));
+    CompactMode.AlphaValue:= ReadInt(Inifile, INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_ALPHA_VALUE, COMPACT_MODE_ALPHA_MIN, 255, DEF_COMPACT_MODE_ALPHA);
   except
     Result:= False;
   end;
@@ -319,6 +383,14 @@ begin
 
   if Assigned(IniFile) then
     IniFile.Free;
+
+{$IFDEF LINUX}
+  // Not supported on Linux
+  LoopAudio:= False;
+  TickingOn:= False;
+  if CompactMode.Transparency = TransparentBackground then
+    CompactMode.Transparency:= None;
+{$ENDIF}
 end;
 
 function TConfig.Save : Boolean;
@@ -340,7 +412,6 @@ begin
     IniFile.WriteBool(INI_SEC_MAIN, INI_TICKING_ON, TickingOn);
     IniFile.WriteBool(INI_SEC_MAIN, INI_AUTOSAVE, AutoSave);
     IniFile.WriteBool(INI_SEC_MAIN, INI_SECONDS_MODE, SecondsMode);
-    IniFile.WriteBool(INI_SEC_MAIN, INI_COMPACT_MODE, CompactMode);
     // Placement
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_HEIGHT, WndHeight);
     IniFile.WriteInteger(INI_SEC_PLACEMENT, INI_WIDTH, WndWidth);
@@ -363,6 +434,10 @@ begin
     IniFile.WriteInteger(INI_SEC_FONTS, INI_BG_COLOR, Font.BgColor);
     IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_SIZE, Font.Size);
     IniFile.WriteInteger(INI_SEC_FONTS, INI_FONT_STYLE, FontStylesToInt(Font.Style));
+    // CompactMode
+    IniFile.WriteBool(INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_ENABLED, CompactMode.Enabled);
+    IniFile.WriteInteger(INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_TRANSPARENCY, Ord(CompactMode.Transparency));
+    IniFile.WriteInteger(INI_SEC_COMPACT_MODE, INI_COMPACT_MODE_ALPHA_VALUE, CompactMode.AlphaValue);
 
     IniFile.UpdateFile;
   except

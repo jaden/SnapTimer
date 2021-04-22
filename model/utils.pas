@@ -185,10 +185,10 @@ begin
 {$ENDIF}
 
 {$IFDEF LINUX}
-  // TODO test
-  //p.X:= Control.Left;
-  //p.Y:= Control.Top;
-  //Result:= Control.ClientToScreen(p);
+  // TODO: This works on Lubuntu, bit of a hack
+  p.X:= Control.Left - 2;
+  p.Y:= Control.Top - 32;
+  Result:= Control.ClientToScreen(p);
 {$ENDIF}
 end;
 

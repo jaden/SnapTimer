@@ -47,7 +47,7 @@ var
 procedure TMainController.SetCompactMode(Value: Boolean);
 var Pos : TPoint;
 begin
-  if (Value = FCompactMode) or (GetConfig.CompactMode = False) then
+  if (Value = FCompactMode) or (GetConfig.CompactMode.Enabled = False) then
     Exit;
 
   if Value = True then
@@ -61,6 +61,7 @@ begin
     CompactModeForm.Count.Caption:= MainForm.Count.Caption;
     CompactModeForm.Count.Font:= MainForm.Count.Font;
     CompactModeForm.Count.Color:= MainForm.Count.Color;
+    CompactModeForm.SetTransparency(GetConfig.CompactMode);
     CompactModeForm.Visible:= True;
     MainForm.Visible:= False;
   end
