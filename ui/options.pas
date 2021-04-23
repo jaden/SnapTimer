@@ -81,7 +81,6 @@ type
     procedure TestTrayMsg(Sender: TObject);
     procedure UpdateFontColor(Sender: TObject);
     procedure UpdateFontBgColor(Sender: TObject);
-    procedure UpdateFontSize(Sender: TObject);
   private
   public
     { public declarations }
@@ -322,11 +321,6 @@ begin
   AlphaValueTrackBar.Enabled:= CheckCompactMode.Checked And RadioTrAlphaBlending.Checked;
 end;
 
-
-procedure TOptionsForm.UpdateFontSize(Sender: TObject);
-begin
-  //FontPreview.Font.Size:= FontSize.Value;
-end;
 
 procedure TOptionsForm.UpdateFontColor(Sender: TObject);
 begin

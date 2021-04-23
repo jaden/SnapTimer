@@ -320,6 +320,7 @@ destructor TConfig.Free;
 begin
   FFont.Free;
   FDefaultFont.Free;
+  FCompactMode.Free;
 end;
 
 function ReadInt(InIfile: TIniFile; const Section, Ident: String;  Min, Max, Default: Integer) : Integer;

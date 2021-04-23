@@ -428,7 +428,6 @@ object OptionsForm: TOptionsForm
           Top = 3
           Width = 47
           MaxValue = 1000
-          OnChange = UpdateFontSize
           ParentFont = False
           TabOrder = 0
         end

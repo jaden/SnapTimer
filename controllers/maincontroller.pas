@@ -29,7 +29,6 @@ type
       procedure ShowTrayMessage(Msg: string);
       procedure ShowDoneMessage(Msg: string);
 
-      //property CompactMode : Boolean read FCompactMode write SetCompactMode; // Do we need this???
       property CompactMode : Boolean read FCompactMode;
       property Timer : TMyTimer read FTimer;
   end;
@@ -178,9 +177,9 @@ begin
   end;
 end;
 
-// When it comes to buttons and menus, there are only two states.
 procedure TMainController.UpdateButtonsAndMenus;
 begin
+  // When it comes to buttons and menus, there are only two states.
   with MainForm do
   begin
     if Timer.State = TState.Running then
@@ -228,8 +227,6 @@ procedure TMainController.ResetCountdown(Sender: TObject);
 begin
   if ((Sender = MainForm.Count) or (Sender = CompactModeForm.Count)) and (GetConfig.DblClickTime = False) then
     Exit;
-
-  // TODO compact mode
 
   Timer.Reset;
 end;

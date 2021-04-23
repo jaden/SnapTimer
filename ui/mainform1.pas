@@ -123,7 +123,6 @@ begin
 
   if Config.Load = False then
   begin
-    // When will this code execute?
     MessageDlg(MSG_OPEN_INI, mtError, [mbOK], 0);
     Exit;
   end;
@@ -198,7 +197,7 @@ procedure TMainForm.TrayIconMainClick(Sender: TObject);
 begin
   if WindowState = wsNormal then
   begin
-    // Windows: setting wsMinimized does not minimize to taskbar.
+    // Windows: setting WindowState to wsMinimized does not minimize to taskbar.
     //WindowState:= wsMinimized;
     Application.Minimize;
   end
