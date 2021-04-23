@@ -156,40 +156,23 @@ end;
 
 class procedure TUtils.SetControlPos(Control: TWinControl; X: Integer; Y: Integer);
 begin
-{$IFDEF WINDOWS}
   // It seems that there is no difference.
   //SetWindowPos(Control.Handle, HWND_TOP, X, Y, 0, 0, SWP_SHOWWINDOW or SWP_NOSIZE);
   Control.Left:= X;
   Control.Top:= Y;
-{$ENDIF}
-
-{$IFDEF LINUX}
-  Control.Left:= X;
-  Control.Top:= Y;
-{$ENDIF}
 end;
 
 class function TUtils.GetControlPos(Control: TWinControl) : TPoint;
 var r : TRect;
     p : TPoint;
 begin
-{$IFDEF WINDOWS}
-  GetWindowRect(Control.Handle, r);
-  Result.X:= r.Left;
-  Result.Y:= r.Top;
-
-  // Slightly different results
-  //p.X:= Control.Left;
-  //p.Y:= Control.Top;
-  //Result:= Control.ClientToScreen(p);
-{$ENDIF}
-
-{$IFDEF LINUX}
-  // TODO: This works on Lubuntu, bit of a hack
-  p.X:= Control.Left - 2;
-  p.Y:= Control.Top - 32;
+  //GetWindowRect(Control.Handle, r);
+  //Result.X:= r.Left;
+  //Result.Y:= r.Top;
+  // No difference
+  p.X:= 0;
+  p.Y:= 0;
   Result:= Control.ClientToScreen(p);
-{$ENDIF}
 end;
 
 // https://wiki.freepascal.org/Play_Sound_Multiplatform
