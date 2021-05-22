@@ -195,6 +195,9 @@ end;
 
 procedure TMainForm.TrayIconMainClick(Sender: TObject);
 begin
+  if GetMainController.CompactMode then
+    exit; // No hide or show
+
   if WindowState = wsNormal then
   begin
     // Windows: setting WindowState to wsMinimized does not minimize to taskbar.
