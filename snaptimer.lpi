@@ -26,6 +26,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="ui;model;controllers"/>
             <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
           </SearchPaths>
           <Parsing>
@@ -64,13 +65,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+            <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
           </local>
         </Mode0>
       </Modes>
@@ -84,34 +85,78 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="12">
       <Unit0>
         <Filename Value="snaptimer.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="mainform1.pas"/>
+        <Filename Value="ui\about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="About"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="ui\floating.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="Floating"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="ui\mainform1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainForm1"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="about.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="AboutForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="About"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="settings.pas"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="ui\options.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OptionsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit3>
+        <UnitName Value="Options"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="model\config.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Config"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="model\mytimer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MyTimer"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="model\utils.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="ui\msgbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MsgBoxForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="ui\compactmode.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CompactModeForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CompactMode"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="controllers\maincontroller.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MainController"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="ui\consts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Consts"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -122,6 +167,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="ui;model;controllers"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

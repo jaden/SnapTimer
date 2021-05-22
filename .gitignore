@@ -1,5 +1,6 @@
 backup
 Deploy
+SnapTimer
 *.o
 *.or
 *.ppu

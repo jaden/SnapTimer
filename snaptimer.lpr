@@ -3,7 +3,7 @@ program snaptimer;
 {$mode objfpc}{$H+}
 
 uses
-  Forms, Interfaces, MainForm1, About, settings;
+  Forms, Interfaces, MainForm1, utils, CompactMode, consts;
 
 {$R *.res}
 
@@ -11,6 +11,7 @@ begin
   Application.Title:='SnapTimer';
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TCompactModeForm, CompactModeForm);
   Application.Run;
 end.
 

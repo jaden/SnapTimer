@@ -1,0 +1,25 @@
+object CompactModeForm: TCompactModeForm
+  Left = 631
+  Height = 207
+  Top = 246
+  Width = 305
+  BorderStyle = bsNone
+  ClientHeight = 207
+  ClientWidth = 305
+  FormStyle = fsSystemStayOnTop
+  LCLVersion = '2.0.10.0'
+  object Count: TPanel
+    Cursor = crHandPoint
+    Left = 0
+    Height = 207
+    Top = 0
+    Width = 305
+    Align = alBottom
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BevelOuter = bvNone
+    Caption = 'Count'
+    TabOrder = 0
+    OnClick = CountClick
+    OnDblClick = CountDblClick
+  end
+end
