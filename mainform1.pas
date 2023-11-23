@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
   Menus, StdCtrls, Spin, ExtCtrls, About, LCLType, IniFiles, Settings, MMSystem,
-  Windows, StrUtils, DateUtils;
+  Windows, StrUtils, DateUtils, Math;
 
 type
   TMode = (Timer, Stopwatch);
@@ -67,6 +67,7 @@ type
     procedure ToggleCountdown(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     function SecondsToTime(Seconds: integer): string;
+    function GetCurrentTimeInSeconds(): longint;
     procedure FormWindowStateChange(Sender: TObject);
     procedure UpdateTime();
     procedure SaveSettings(Sender: TObject);
@@ -120,8 +121,8 @@ type
     FontSizeChanged : boolean;
     //FormerWidth : integer;
     //FormerHeight : integer;
-    EndTime: TDateTime;
-    StartTime: TDateTime;
+    EndTime: longint;
+    StartTime: longint;
     CountdownDone: boolean;
   public
     { public declarations }
@@ -519,12 +520,12 @@ begin
   if Minutes.Value = 0 then
   begin
     Mode := Stopwatch;
-    StartTime := Now - (Timer1.Tag * OneSecond);
+    StartTime := GetCurrentTimeInSeconds() - (Timer1.Tag * 1);
   end
   else
   begin
     Mode := Timer;
-    EndTime := Now + (Timer1.Tag * OneSecond);
+    EndTime := GetCurrentTimeInSeconds() + (Timer1.Tag * 1);
   end;
 
   if Timer1.Enabled then
@@ -540,22 +541,24 @@ begin
         // starting number to next one - fix?
         CountdownDone := False;
         ResetCountdown(Sender);
-        EndTime := Now + (Timer1.Tag * OneSecond);
+        EndTime := GetCurrentTimeInSeconds() + (Timer1.Tag * 1);
     end;
     EnableTimer();
   end
 end;
 
 procedure TMainForm.Countdown(Sender: TObject);
+var TmpCurrentTime: longint;
 begin
   if MODE = Stopwatch then
   begin
-    Timer1.Tag := SecondsBetween(StartTime, Now);
+    TmpCurrentTime := GetCurrentTimeInSeconds();
+    Timer1.Tag := max(StartTime, TmpCurrentTime) - min(StartTime, TmpCurrentTime);
     UpdateTime();
   end
   else
   begin
-    if EndTime <= Now then
+    if EndTime <= GetCurrentTimeInSeconds() then
     begin
       Timer1.Tag := 0;
       UpdateTime();
@@ -578,7 +581,8 @@ begin
     end
     else
       UpdateTime();
-    Timer1.Tag := SecondsBetween(EndTime, Now);
+    TmpCurrentTime := GetCurrentTimeInSeconds();
+    Timer1.Tag := max(EndTime, TmpCurrentTime) - min(EndTime, TmpCurrentTime);
   end;
 end;
 
@@ -768,6 +772,17 @@ begin
   begin
     Result := SysUtils.Format('%.2d:%.2d:%.2d', [h, m, s]);
   end;
+end;
+
+function TMainForm.GetCurrentTimeInSeconds(): longint;
+var
+  HH, MM, SS, MS: word;
+begin
+  HH := 0;
+  MM := 0;
+  SS := 0;
+  DecodeTime(Time, HH, MM, SS, MS);
+  Result := HH * 3600 + MM * 60 + SS;
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
